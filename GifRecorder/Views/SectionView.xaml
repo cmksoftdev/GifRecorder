@@ -1,0 +1,16 @@
+﻿<Window x:Class="GifRecorder.Views.SectionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GifRecorder.Views"
+        mc:Ignorable="d"
+        Title="SectionView" Height="300" Width="300" WindowStyle="None" Background="Transparent" 
+        AllowsTransparency="True" ResizeMode="CanResizeWithGrip">
+    
+    <Grid Background="DarkRed" Opacity="0.4">
+        <Rectangle Stroke="Red"></Rectangle>
+        <Button VerticalAlignment="Center" Width="100" Click="Button_Click_2" Background="Red">OK</Button>
+        <Button VerticalAlignment="Top" Width="300" HorizontalAlignment="Left" PreviewMouseDown="Button_Click_1" Background="Red">Verschieben</Button>
+    </Grid>
+</Window>
