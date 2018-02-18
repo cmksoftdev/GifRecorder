@@ -5,13 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GifRecorder"
         mc:Ignorable="d"
-        Title="Gif Screen Recorder" Height="190" Width="256" ResizeMode="NoResize" Icon="/GifRecorder;component/Resources/cmkicon.ico">
+        Title="Gif Screen Recorder" Height="210" Width="270" ResizeMode="NoResize" Icon="/GifRecorder;component/Resources/cmkicon.ico">
     <Grid>
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-            <Label HorizontalAlignment="Center">Aufnahmezeit in Sekunden:</Label>
-            <TextBox x:Name="Seconds" Text="10" TextAlignment="Center"></TextBox>
-            <Label HorizontalAlignment="Center">Dateiname:</Label>
-            <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Center"></TextBox>
+            <StackPanel Orientation="Horizontal">
+                <Label HorizontalAlignment="Center" Width="160">Aufnahmezeit in Sekunden:</Label>
+                <TextBox x:Name="Seconds" Text="10" TextAlignment="Center" HorizontalAlignment="Stretch" Width="88"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label HorizontalAlignment="Center" Width="160">Bilder pro Sekunde:</Label>
+                <TextBox x:Name="FPS" Text="10" TextAlignment="Center" HorizontalAlignment="Right" Width="88" />
+            </StackPanel>
+            <Label HorizontalAlignment="Left">Dateiname:</Label>
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Center" Width="220"></TextBox>
+                <Label Foreground="DarkGray">.gif</Label>
+            </StackPanel>            
             <Button x:Name="StartStopButton" Click="Button_Click">Start</Button>
             <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>
             <Label x:Name="Status" Content="Startbereit" HorizontalAlignment="Center"></Label>

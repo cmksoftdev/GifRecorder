@@ -14,16 +14,16 @@ namespace GifRecorder.ViewModels
 
         private GifRec gifRecorder;
 
-        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action)
+        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval)
         {
             var filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".gif";
             var stream = new FileStream(filePath, FileMode.CreateNew);
             gifRecorder = new GifRec(stream, action);
-            await gifRecorder.Start(seconds, AX, AY, BX, BY);
+            await gifRecorder.Start(seconds, AX, AY, BX, BY, timeInterval);
             return true;
         }
 
-        public bool ToggleRecorder(int seconds, string fileName, Action<int> action)
+        public bool ToggleRecorder(int seconds, string fileName, Action<int> action, int timeInterval)
         {
             if (gifRecorder != null && gifRecorder.IsRunning)
             {
@@ -32,7 +32,7 @@ namespace GifRecorder.ViewModels
             }
             else
             {
-                StartRecorder(seconds, fileName, action);
+                StartRecorder(seconds, fileName, action, timeInterval);
                 return true;
             }
         }

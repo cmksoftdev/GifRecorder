@@ -7,7 +7,6 @@ namespace GifRecorder.Services
     public class GifRecorder
     {
         private Stream stream;
-        private int timeInterval = 150;
         private readonly Action<int> stepAction;
 
         public bool Cancel { get; set; }
@@ -19,24 +18,24 @@ namespace GifRecorder.Services
             this.stepAction = action;
         }
 
-        public async Task Start(int seconds, int ax, int ay, int bx, int by)
+        public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval)
         {
-            await this.captureScreenSequence(seconds, ax, ay, bx, by);
+            await this.captureScreenSequence(seconds, ax, ay, bx, by, timeInterval);
         }
 
-        private async Task captureScreenSequence(int seconds, int ax, int ay, int bx, int by)
+        private async Task captureScreenSequence(int seconds, int ax, int ay, int bx, int by, int timeInterval)
         {
-            using (var gifWriter = new GifWriter(this.stream, this.timeInterval, -1))
+            using (var gifWriter = new GifWriter(this.stream, timeInterval, -1))
             {
                 Cancel = false;
                 IsRunning = true;
-                var imageCount = seconds * 1000 / this.timeInterval;
+                var imageCount = seconds * 1000 / timeInterval;
                 var time = 0L;
                 for (int i = 0; i < imageCount; i++)
                 {
                     if (Cancel)
                         break;
-                    time = this.timeInterval - time < 0 ? 0 : this.timeInterval - time;
+                    time = timeInterval - time < 0 ? 0 : timeInterval - time;
                     await Task.Delay((int)(time)).ContinueWith( (t) => 
                     {
                         stepAction.Invoke(time==0?0:1);

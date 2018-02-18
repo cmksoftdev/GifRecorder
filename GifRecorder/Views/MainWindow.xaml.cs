@@ -23,11 +23,12 @@ namespace GifRecorder
             if (isRunning)
                 return;
             int seconds;
-            if (int.TryParse(this.Seconds.Text, out seconds))
+            int fps;
+            if (int.TryParse(this.Seconds.Text, out seconds) && int.TryParse(this.FPS.Text, out fps))
             {
                 this.isRunning = true;
                 this.Status.Content = "Aufnahme läuft";
-                if (((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText))
+                if (((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000/fps))
                 {
                     this.StartStopButton.Content = "Stop";
                 }
