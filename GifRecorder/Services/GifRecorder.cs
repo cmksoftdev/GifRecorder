@@ -31,6 +31,7 @@ namespace GifRecorder.Services
                 IsRunning = true;
                 var imageCount = seconds * 1000 / timeInterval;
                 var time = 0L;
+                this.stepAction.Invoke(3);
                 for (int i = 0; i < imageCount; i++)
                 {
                     if (Cancel)

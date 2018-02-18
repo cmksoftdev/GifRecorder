@@ -27,14 +27,7 @@ namespace GifRecorder
             if (int.TryParse(this.Seconds.Text, out seconds) && int.TryParse(this.FPS.Text, out fps))
             {
                 this.isRunning = true;
-                if (((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000/fps))
-                {
-                    this.StartStopButton.Content = "Stop";
-                }
-                else
-                {
-                    this.StartStopButton.Content = "Start";
-                }
+                ((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000 / fps);
                 this.isRunning = false;
             }
         }
@@ -56,8 +49,20 @@ namespace GifRecorder
                 case 2:
                     this.Dispatcher.Invoke(() => { this.Status.Foreground = Brushes.Black; });
                     break;
+                case 3:
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.Status.Foreground = Brushes.Black;
+                        this.StartStopButton.Content = "Stop";
+                    });
+                    break;
                 default:
-                    this.Dispatcher.Invoke(() => { this.Status.Foreground = Brushes.Black; this.Status.Content = "Aufnahme beendet"; });
+                    this.Dispatcher.Invoke(() => 
+                    {
+                        this.Status.Foreground = Brushes.Black;
+                        this.Status.Content = "Aufnahme beendet";
+                        this.StartStopButton.Content = "Start";
+                    });
                     return;
             }
 
