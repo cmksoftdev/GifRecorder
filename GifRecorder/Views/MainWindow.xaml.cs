@@ -27,7 +27,14 @@ namespace GifRecorder
             {
                 this.isRunning = true;
                 this.Status.Content = "Aufnahme läuft";
-                ((MainViewModel)(this.DataContext)).StartRecorder(seconds, this.FileName.Text, SetText);
+                if (((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText))
+                {
+                    this.StartStopButton.Content = "Stop";
+                }
+                else
+                {
+                    this.StartStopButton.Content = "Start";
+                }
                 this.isRunning = false;
             }
         }

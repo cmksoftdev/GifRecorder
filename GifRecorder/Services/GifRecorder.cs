@@ -10,6 +10,9 @@ namespace GifRecorder.Services
         private int timeInterval = 150;
         private readonly Action<int> stepAction;
 
+        public bool Cancel { get; set; }
+        public bool IsRunning { get; private set; }
+
         public GifRecorder(Stream stream, Action<int> action)
         {
             this.stream = stream;
@@ -25,10 +28,14 @@ namespace GifRecorder.Services
         {
             using (var gifWriter = new GifWriter(this.stream, this.timeInterval, -1))
             {
+                Cancel = false;
+                IsRunning = true;
                 var imageCount = seconds * 1000 / this.timeInterval;
                 var time = 0L;
                 for (int i = 0; i < imageCount; i++)
                 {
+                    if (Cancel)
+                        break;
                     time = this.timeInterval - time < 0 ? 0 : this.timeInterval - time;
                     await Task.Delay((int)(time)).ContinueWith( (t) => 
                     {
@@ -39,6 +46,7 @@ namespace GifRecorder.Services
                         time = DateTime.Now.Ticks / 10000 - time2;
                     });
                 }
+                IsRunning = false;
             }
         }
     }
