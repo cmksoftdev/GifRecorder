@@ -45,6 +45,7 @@ namespace GifRecorder.Services
                         time = DateTime.Now.Ticks / 10000 - time2;
                     });
                 }
+                this.stepAction.Invoke(-1);
                 IsRunning = false;
             }
         }
