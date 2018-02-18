@@ -11,7 +11,7 @@ namespace GifRecorder.Services
     public class GifRecorder
     {
         private Stream stream;
-        private int timeInterval = 50;
+        private int timeInterval = 100;
         private readonly Action stepAction;
 
         public GifRecorder(Stream stream, Action action)
@@ -35,7 +35,9 @@ namespace GifRecorder.Services
                 {
                     var lastTime = time;
                     time = DateTime.Now.Ticks;
-                    await Task.Delay(((int)(this.timeInterval - time - lastTime))).ContinueWith( (t) => 
+                    var delay = ((int)(this.timeInterval - time + lastTime));
+                    delay = delay < 0 ? 0 : delay;
+                    await Task.Delay(delay).ContinueWith( (t) => 
                     {
                         var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
                         gifWriter.WriteFrame(image);
