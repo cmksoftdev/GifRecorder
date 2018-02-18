@@ -60,7 +60,7 @@ namespace GifRecorder
                     this.Dispatcher.Invoke(() => 
                     {
                         this.Status.Foreground = Brushes.Black;
-                        this.Status.Content = "Aufnahme beendet";
+                        this.Status.Content = "Datei unter MyDocuments gespeichert";
                         this.StartStopButton.Content = "Start";
                     });
                     return;
