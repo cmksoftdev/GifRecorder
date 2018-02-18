@@ -41,7 +41,6 @@ namespace GifRecorder
                 this.Status.Content = "Aufnahme läuft";
                 ((MainViewModel)(this.DataContext)).StartRecorder(seconds, this.FileName.Text, SetText);
                 this.isRunning = false;
-                //this.Status.Content = "Startbereit";
             }
         }
 
