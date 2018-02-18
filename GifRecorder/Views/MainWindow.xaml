@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GifRecorder"
         mc:Ignorable="d"
-        Title="Gif Screen Recorder" Height="190" Width="256" ResizeMode="NoResize">
+        Title="Gif Screen Recorder" Height="190" Width="256" ResizeMode="NoResize" Icon="/GifRecorder;component/Resources/cmkicon.ico">
     <Grid>
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
             <Label HorizontalAlignment="Center">Aufnahmezeit in Sekunden:</Label>
