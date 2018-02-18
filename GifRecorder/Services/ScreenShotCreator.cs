@@ -45,7 +45,8 @@ namespace GifRecorder.Services
             {
                 using (Graphics g = Graphics.FromImage(result))
                 {
-                    g.CopyFromScreen(aX, aY, 0, 0, Screen.PrimaryScreen.Bounds.Size, CopyPixelOperation.SourceCopy);
+                    
+                    g.CopyFromScreen(aX, aY, 0, 0, result.Size, CopyPixelOperation.SourceCopy);
 
                     if (CaptureMouse)
                     {

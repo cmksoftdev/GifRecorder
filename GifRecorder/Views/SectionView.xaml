@@ -10,7 +10,7 @@
     
     <Grid Background="DarkRed" Opacity="0.4">
         <Rectangle Stroke="Red"></Rectangle>
-        <Button VerticalAlignment="Center" Width="100" Click="Button_Click_2" Background="Red">OK</Button>
-        <Button VerticalAlignment="Top" Width="300" HorizontalAlignment="Left" PreviewMouseDown="Button_Click_1" Background="Red">Verschieben</Button>
+        <Button VerticalAlignment="Center" Width="100" Click="Button_Click_2" Background="Red" Foreground="White">OK</Button>
+        <Button VerticalAlignment="Top" HorizontalAlignment="Stretch" PreviewMouseDown="Button_Click_1" Background="Red" Foreground="White">Verschieben</Button>
     </Grid>
 </Window>

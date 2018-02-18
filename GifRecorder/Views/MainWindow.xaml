@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GifRecorder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="190" Width="256">
+        Title="Gif Screen Recorder" Height="190" Width="256" ResizeMode="NoResize">
     <Grid>
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-            <Label>Aufnahmezeit in Sekunden:</Label>
-            <TextBox x:Name="Seconds" Text="10"></TextBox>
-            <Label>Dateiname:</Label>
-            <TextBox x:Name="FileName" Text="Aufnahme1"></TextBox>
+            <Label HorizontalAlignment="Center">Aufnahmezeit in Sekunden:</Label>
+            <TextBox x:Name="Seconds" Text="10" TextAlignment="Center"></TextBox>
+            <Label HorizontalAlignment="Center">Dateiname:</Label>
+            <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Center"></TextBox>
             <Button Click="Button_Click">Start</Button>
-            <Button Click="Button_Click_1">Set section</Button>
+            <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>
             <Label x:Name="Status" Content="Startbereit" HorizontalAlignment="Center"></Label>
         </StackPanel>
     </Grid>

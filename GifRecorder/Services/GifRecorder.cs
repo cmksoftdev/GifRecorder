@@ -11,11 +11,13 @@ namespace GifRecorder.Services
     public class GifRecorder
     {
         private Stream stream;
-        private int timeInterval = 200;
+        private int timeInterval = 50;
+        private readonly Action stepAction;
 
-        public GifRecorder(Stream stream)
+        public GifRecorder(Stream stream, Action action)
         {
             this.stream = stream;
+            this.stepAction = action;
         }
 
         public async Task Start(int seconds, int ax, int ay, int bx, int by)
@@ -28,11 +30,17 @@ namespace GifRecorder.Services
             using (var gifWriter = new GifWriter(this.stream, this.timeInterval, -1))
             {
                 var imageCount = seconds * 1000 / this.timeInterval;
+                var time = DateTime.Now.Ticks;
                 for (int i = 0; i < imageCount; i++)
                 {
-                    var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
-                    gifWriter.WriteFrame(image);
-                    Task.Delay(this.timeInterval).Wait();
+                    var lastTime = time;
+                    time = DateTime.Now.Ticks;
+                    await Task.Delay(((int)(this.timeInterval - time - lastTime))).ContinueWith( (t) => 
+                    {
+                        var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
+                        gifWriter.WriteFrame(image);
+                        stepAction.Invoke();
+                    });
                 }
             }
         }

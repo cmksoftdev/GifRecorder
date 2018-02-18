@@ -23,6 +23,7 @@ namespace GifRecorder
     public partial class MainWindow : Window
     {
         bool isRunning = false;
+        private int step = 0;
         public MainWindow()
         {
             this.DataContext = new MainViewModel();
@@ -38,10 +39,36 @@ namespace GifRecorder
             {
                 this.isRunning = true;
                 this.Status.Content = "Aufnahme läuft";
-                Task.Delay(10);
-                ((MainViewModel)(this.DataContext)).StartRecorder(seconds, this.FileName.Text).Wait();
+                ((MainViewModel)(this.DataContext)).StartRecorder(seconds, this.FileName.Text, SetText);
                 this.isRunning = false;
-                this.Status.Content = "Startbereit";
+                //this.Status.Content = "Startbereit";
+            }
+        }
+
+        private void SetText()
+        {
+            if (step < 3)
+                step++;
+            else
+                step = 0;
+            switch (step)
+            {
+                case 0:
+                    this.Dispatcher.Invoke(()=> { this.Status.Content = "-"; });
+                    
+                    break;
+                case 1:
+                    this.Dispatcher.Invoke(() => { this.Status.Content = "\\"; });
+                    break;
+                case 2:
+                    this.Dispatcher.Invoke(() => { this.Status.Content = "|"; });
+                    break;
+                case 3:
+                    this.Dispatcher.Invoke(() => { this.Status.Content = "/"; });
+                    break;
+                default:
+                    this.Dispatcher.Invoke(() => { this.Status.Content = "*"; });
+                    break;
             }
         }
 
