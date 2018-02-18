@@ -44,17 +44,32 @@ namespace GifRecorder
             }
         }
 
-        private void SetText()
+        private void SetText(int status)
         {
             if (step < 3)
                 step++;
             else
                 step = 0;
+            switch (status)
+            {
+                case 0:
+                    this.Dispatcher.Invoke(() => { this.Status.Foreground = Brushes.Red; });
+                    break;
+                case 1:
+                    this.Dispatcher.Invoke(() => { this.Status.Foreground = Brushes.Green; });
+                    break;
+                case 2:
+                    this.Dispatcher.Invoke(() => { this.Status.Foreground = Brushes.Black; });
+                    break;
+                default:
+                    this.Dispatcher.Invoke(() => { this.Status.Foreground = Brushes.Red; });
+                    break;
+            }
+
             switch (step)
             {
                 case 0:
                     this.Dispatcher.Invoke(()=> { this.Status.Content = "-"; });
-                    
                     break;
                 case 1:
                     this.Dispatcher.Invoke(() => { this.Status.Content = "\\"; });

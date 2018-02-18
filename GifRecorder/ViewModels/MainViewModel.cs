@@ -15,7 +15,7 @@ namespace GifRecorder.ViewModels
         public int BX;
         public int BY;
 
-        public async Task<bool> StartRecorder(int seconds, string fileName, Action action)
+        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action)
         {
             var filePath = Directory.GetCurrentDirectory() + "\\" + fileName + ".gif";
             var stream = new FileStream(filePath, FileMode.CreateNew);
