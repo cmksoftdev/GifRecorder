@@ -61,6 +61,7 @@ namespace GifRecorder
                     this.Dispatcher.Invoke(() => 
                     {
                         this.Status.Foreground = Brushes.Black;
+                        this.AusgabedateiAnzeigen.IsEnabled = true;
                         this.Status.Content = "Datei unter MyDocuments gespeichert";
                         this.StartStopButton.Content = "Start";
                     });

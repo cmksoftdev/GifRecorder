@@ -22,7 +22,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Left" Width="115">Dateiname:</Label>
-                <Button Click="Button_Click_2" Width="139">Ausgabedatei anzeigen</Button>
+                <Button x:Name="AusgabedateiAnzeigen" Click="Button_Click_2" Width="139" IsEnabled="False">Ausgabedatei anzeigen</Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Right" Width="150" Height="18"></TextBox>
