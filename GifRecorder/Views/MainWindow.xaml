@@ -5,23 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GifRecorder"
         mc:Ignorable="d"
-        Title="Gif Screen Recorder" Height="210" Width="270" ResizeMode="NoResize" Icon="/GifRecorder;component/Resources/cmkicon.ico">
+        Title="Gif Screen Recorder" Foreground="AliceBlue" Height="210" Width="270" Background="Azure" ResizeMode="NoResize" Icon="/GifRecorder;component/Resources/cmkicon.ico">
     <Grid>
-        <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="29*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Aufnahmezeit in Sekunden:</Label>
-                <TextBox x:Name="Seconds" Text="10" TextAlignment="Center" HorizontalAlignment="Stretch" Width="88"/>
+                <TextBox x:Name="Seconds" Text="10" TextAlignment="Center" HorizontalAlignment="Stretch" Width="88" Height="18"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Bilder pro Sekunde:</Label>
-                <TextBox x:Name="FPS" Text="10" TextAlignment="Center" HorizontalAlignment="Right" Width="88" />
+                <TextBox x:Name="FPS" Text="10" TextAlignment="Center" HorizontalAlignment="Right" Width="88"  Height="18"/>
             </StackPanel>
-            <Label HorizontalAlignment="Left">Dateiname:</Label>
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Center" Width="100"></TextBox>
-                <Label Foreground="DarkGray">.gif</Label>
-                <Button Click="Button_Click_2" Width="138">Ausgabeordner anzeigen</Button>
-            </StackPanel>            
+                <Label HorizontalAlignment="Left" Width="115">Dateiname:</Label>
+                <Button Click="Button_Click_2" Width="139">Ausgabedatei anzeigen</Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Right" Width="150" Height="18"></TextBox>
+                <Label Foreground="Gray">.gif</Label>
+            </StackPanel>
             <Button x:Name="StartStopButton" Click="Button_Click">Start</Button>
             <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>
             <Label x:Name="Status" Content="Startbereit" HorizontalAlignment="Center"></Label>
