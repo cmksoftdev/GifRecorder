@@ -101,11 +101,7 @@ namespace GifRecorder
             {
                 return;
             }
-
-            // combine the arguments together
-            // it doesn't matter if there is a space after ','
             string argument = "/select, \"" + filePath + "\"";
-
             System.Diagnostics.Process.Start("explorer.exe", argument);
         }
     }

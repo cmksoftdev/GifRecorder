@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.IO;
 using System;
+using System.Windows.Forms;
 
 namespace GifRecorder.ViewModels
 {
@@ -18,8 +19,12 @@ namespace GifRecorder.ViewModels
 
         public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval)
         {
-
             FilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".gif";
+            if (File.Exists(FilePath))
+            {
+                if (MessageBox.Show($"Eine Datei mit dem Namen {fileName}.gif existiert bereits. \nSoll diese ersetzt werden?", "Datei existiert bereits", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return false;
+            }
             var stream = new FileStream(FilePath, FileMode.Create);
             gifRecorder = new GifRec(stream, action);
             await gifRecorder.Start(seconds, AX, AY, BX, BY, timeInterval);
