@@ -1,5 +1,6 @@
 ﻿using GifRecorder.ViewModels;
 using GifRecorder.Views;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 
@@ -91,6 +92,21 @@ namespace GifRecorder
             var section = new SectionView();
             section.DataContext = this.DataContext;
             section.ShowDialog();
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            string filePath = ((MainViewModel)this.DataContext).FilePath;
+            if (!File.Exists(filePath))
+            {
+                return;
+            }
+
+            // combine the arguments together
+            // it doesn't matter if there is a space after ','
+            string argument = "/select, \"" + filePath + "\"";
+
+            System.Diagnostics.Process.Start("explorer.exe", argument);
         }
     }
 }

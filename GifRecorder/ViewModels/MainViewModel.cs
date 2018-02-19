@@ -14,10 +14,13 @@ namespace GifRecorder.ViewModels
 
         private GifRec gifRecorder;
 
+        public string FilePath { get; private set; }
+
         public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval)
         {
-            var filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".gif";
-            var stream = new FileStream(filePath, FileMode.CreateNew);
+
+            FilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".gif";
+            var stream = new FileStream(FilePath, FileMode.Create);
             gifRecorder = new GifRec(stream, action);
             await gifRecorder.Start(seconds, AX, AY, BX, BY, timeInterval);
             return true;

@@ -18,8 +18,9 @@
             </StackPanel>
             <Label HorizontalAlignment="Left">Dateiname:</Label>
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Center" Width="220"></TextBox>
+                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Center" Width="100"></TextBox>
                 <Label Foreground="DarkGray">.gif</Label>
+                <Button Click="Button_Click_2" Width="138">Ausgabeordner anzeigen</Button>
             </StackPanel>            
             <Button x:Name="StartStopButton" Click="Button_Click">Start</Button>
             <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>
