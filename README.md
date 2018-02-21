@@ -6,3 +6,6 @@ The gif below shows how to use the tool.
 
 
 ![](https://media.giphy.com/media/9rphauhVLUisUlxKE4/giphy.gif)
+
+
+You can also download the newest setup build from http://cmk.bplaced.net/
