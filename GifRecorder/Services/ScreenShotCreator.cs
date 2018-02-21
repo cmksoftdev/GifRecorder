@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 
 namespace GifRecorder.Services
 {
@@ -38,7 +39,8 @@ namespace GifRecorder.Services
 
         public static Bitmap CaptureScreen(bool CaptureMouse, int aX, int aY, int bX, int bY)
         {
-            Bitmap result = new Bitmap(bX, bY, PixelFormat.Format24bppRgb);
+            Bitmap result = bX == 0 || bY == 0 ? new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height, PixelFormat.Format24bppRgb) 
+                : new Bitmap(bX, bY, PixelFormat.Format24bppRgb);
 
             try
             {
