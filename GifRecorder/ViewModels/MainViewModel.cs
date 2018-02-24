@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System;
 using System.Windows.Forms;
+using System.Windows;
+using GifRecorder.Services;
 
 namespace GifRecorder.ViewModels
 {
@@ -17,21 +19,26 @@ namespace GifRecorder.ViewModels
 
         public string FilePath { get; private set; }
 
-        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval)
+        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval, PresentationSource source)
         {
             FilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".gif";
             if (File.Exists(FilePath))
             {
-                if (MessageBox.Show($"Eine Datei mit dem Namen {fileName}.gif existiert bereits. \nSoll diese ersetzt werden?", "Datei existiert bereits", MessageBoxButtons.YesNo) == DialogResult.No)
+                if (System.Windows.Forms.MessageBox.Show($"Eine Datei mit dem Namen {fileName}.gif existiert bereits. \nSoll diese ersetzt werden?", "Datei existiert bereits", MessageBoxButtons.YesNo) == DialogResult.No)
                     return false;
             }
+            var dpi = DpiGetter.GetDpi(source);
+            AX = (int)(AX * 96.0 / dpi.DpiX);
+            AY = (int)(AY * 96.0 / dpi.DpiY);
+            BX = (int)(BX * 96.0 / dpi.DpiX);
+            BY = (int)(BY * 96.0 / dpi.DpiY);
             var stream = new FileStream(FilePath, FileMode.Create);
             gifRecorder = new GifRec(stream, action);
             await gifRecorder.Start(seconds, AX, AY, BX, BY, timeInterval);
             return true;
         }
 
-        public bool ToggleRecorder(int seconds, string fileName, Action<int> action, int timeInterval)
+        public bool ToggleRecorder(int seconds, string fileName, Action<int> action, int timeInterval, PresentationSource source)
         {
             if (gifRecorder != null && gifRecorder.IsRunning)
             {
@@ -40,7 +47,7 @@ namespace GifRecorder.ViewModels
             }
             else
             {
-                StartRecorder(seconds, fileName, action, timeInterval);
+                StartRecorder(seconds, fileName, action, timeInterval, source);
                 return true;
             }
         }
