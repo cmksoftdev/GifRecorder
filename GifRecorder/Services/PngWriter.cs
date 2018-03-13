@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GifRecorder.Services
 {
-    public class PngWriter
+    public class PngWriter : IDisposable
     {
         #region Fields
         readonly BinaryWriter _writer;
@@ -16,6 +16,9 @@ namespace GifRecorder.Services
         #region Props
         public int DefaultFrameDelay { get; set; }
         public int Repeat { get; }
+
+        private long FrameCountPosition { get; set; }
+        private long FrameCount { get; set; }
         #endregion
 
         public PngWriter(Stream OutStream, int DefaultFrameDelay = 500, int Repeat = -1)
@@ -32,6 +35,7 @@ namespace GifRecorder.Services
             _writer = new BinaryWriter(OutStream);
             this.DefaultFrameDelay = DefaultFrameDelay;
             this.Repeat = Repeat;
+            FrameCount = 0;
         }
 
         private void write_Signature()
@@ -43,17 +47,19 @@ namespace GifRecorder.Services
             write(signature);
         }
 
-        private void write_IHDR()
+        private void write_IHDR() // Image Header
         {
-
+            _writer.Write("dfa".ToCharArray());
         }
 
-        private void write_acTL()
+        private void write_acTL() // Animation Control Chunk
         {
-
+            FrameCountPosition = _writer.BaseStream.Position;
+            _writer.Write(0);
+            _writer.Write(Repeat);
         }
 
-        private void write_fcTL()
+        private void write_fcTL() // Frame Control Chunk
         {
 
         }
@@ -70,6 +76,11 @@ namespace GifRecorder.Services
         private void write(Byte[] data)
         {
             _writer.Write(data);
+        }
+
+        public void Dispose()
+        {
+            write_IEND();
         }
     }
 }
