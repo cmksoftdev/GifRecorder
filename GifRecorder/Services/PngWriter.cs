@@ -78,9 +78,16 @@ namespace GifRecorder.Services
             _writer.Write(data);
         }
 
+        private void writeFrameCount()
+        {
+            _writer.Seek((int)FrameCountPosition, SeekOrigin.Begin);
+            _writer.Write(FrameCount);
+        }
+
         public void Dispose()
         {
             write_IEND();
+            writeFrameCount();
         }
     }
 }
