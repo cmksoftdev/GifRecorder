@@ -19,9 +19,11 @@ namespace GifRecorder.Services
 
         private long FrameCountPosition { get; set; }
         private long FrameCount { get; set; }
+        private int x { get; }
+        private int y { get; }
         #endregion
 
-        public PngWriter(Stream OutStream, int DefaultFrameDelay = 500, int Repeat = -1)
+        public PngWriter(Stream OutStream, int x, int y, int DefaultFrameDelay = 500, int Repeat = 0)
         {
             if (OutStream == null)
                 throw new ArgumentNullException(nameof(OutStream));
@@ -36,6 +38,8 @@ namespace GifRecorder.Services
             this.DefaultFrameDelay = DefaultFrameDelay;
             this.Repeat = Repeat;
             FrameCount = 0;
+            this.x = x;
+            this.y = y;
         }
 
         private void write_Signature()
@@ -55,13 +59,22 @@ namespace GifRecorder.Services
         private void write_acTL() // Animation Control Chunk
         {
             FrameCountPosition = _writer.BaseStream.Position;
-            _writer.Write(0);
-            _writer.Write(Repeat);
+            _writer.Write(0); // Number of frames
+            _writer.Write(Repeat); // Number of times to loop this APNG.  0 indicates infinite looping.
         }
 
         private void write_fcTL() // Frame Control Chunk
         {
-
+            _writer.Write(FrameCount); // Sequence number of the animation chunk, starting from 0
+            _writer.Write(x); // Width of the following frame
+            _writer.Write(y); // Height of the following frame
+            _writer.Write(0); // X position at which to render the following frame
+            _writer.Write(0); // Y position at which to render the following frame
+            _writer.Write(DefaultFrameDelay); // Frame delay fraction numerator
+            _writer.Write(0); // Frame delay fraction denominator
+            _writer.Write(0); // Type of frame area disposal to be done after rendering this frame
+            _writer.Write(0); // Type of frame area rendering for this frame
+            FrameCount++;
         }
 
         private void write_IEND()
