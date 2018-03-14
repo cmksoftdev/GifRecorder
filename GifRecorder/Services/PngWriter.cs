@@ -86,6 +86,14 @@ namespace GifRecorder.Services
             write(iend);
         }
 
+        private void write_IDAT(Stream png)
+        {
+        }
+
+        private void write_fdAT(Stream png)
+        {
+        }
+
         private void write(Byte[] data)
         {
             _writer.Write(data);
