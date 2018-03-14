@@ -21,7 +21,7 @@ namespace GifRecorder.ViewModels
 
         public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval, PresentationSource source)
         {
-            FilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".gif";
+            FilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName + ".png";
             if (File.Exists(FilePath))
             {
                 if (System.Windows.Forms.MessageBox.Show($"Eine Datei mit dem Namen {fileName}.gif existiert bereits. \nSoll diese ersetzt werden?", "Datei existiert bereits", MessageBoxButtons.YesNo) == DialogResult.No)

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -53,7 +55,7 @@ namespace GifRecorder.Services
 
         private void write_IHDR(Stream png) // Image Header
         {
-            Byte[] ihdr = find_IDAT(png);
+            Byte[] ihdr = find_IHDR(png);
             if (ihdr != null)
             {
                 write(ihdr);
@@ -99,10 +101,6 @@ namespace GifRecorder.Services
             }
         }
 
-        private void write_fdAT(Stream png)
-        {
-        }
-
         private Byte[] find_IHDR(Stream png)
         {
             return find(png, "IHDR".ToCharArray());
@@ -115,25 +113,31 @@ namespace GifRecorder.Services
 
         private Byte[] find(Stream png, Char[] search)
         {
-            Char[] result = null;
-            using (var reader = new StreamReader(png))
+            Byte[] result = null;
+            var searchBytes = search.Select(c => (byte)c).ToArray();
+            Byte[] bytes = new Byte[search.Length];
+            int i = 0;
+            Stream stream = new MemoryStream((int)png.Length);
+            png.CopyTo(stream);
+            while (bytes != searchBytes && i < png.Length - 4)
             {
-                Char[] bytes = null;
-                int i = 0;
-                while (bytes != search && i < png.Length - 4)
+                png.Flush();
+                png.Position = i;
+                var debug = png.Read(bytes, 0, search.Length);
+                i++;
+                if (bytes.SequenceEqual(searchBytes))
                 {
-                    reader.ReadBlock(bytes, i, search.Length);
-                    i++;
-                    if(bytes == search)
-                    {
-                        Char[] rawLength = null;
-                        reader.ReadBlock(rawLength, i - 4, 4);
-                        int length = BitConverter.ToInt32(rawLength.Select(c => (byte)c).ToArray(), 0);
-                        reader.ReadBlock(result, i - 4, length + 16);
-                    }
-                }                
+                    Byte[] rawLength = new Byte[4];
+                    png.Position -= 8;
+                    png.Read(rawLength, 0, 4);
+                    Array.Reverse(rawLength);
+                    UInt32 length = BitConverter.ToUInt32(rawLength, 0);
+                    result = new Byte[length + 12];
+                    png.Position -= 4;
+                    png.Read(result, 0, (int)(length + 12));
+                }
             }
-            return result?.Select(c => (byte)c).ToArray();
+            return result;
         }
 
         private void write(Byte[] data)
@@ -145,6 +149,22 @@ namespace GifRecorder.Services
         {
             _writer.Seek((int)FrameCountPosition, SeekOrigin.Begin);
             _writer.Write(FrameCount);
+        }
+
+        public void WriteFrame(Image image)
+        {
+            using (Stream png = new MemoryStream())
+            {
+                image.Save(png, ImageFormat.Png);
+                if (FrameCount == 0)
+                {
+                    write_Signature();
+                    write_IHDR(png);
+                    write_acTL();
+                }
+                write_fcTL();
+                write_IDAT(png);
+            }
         }
 
         public void Dispose()

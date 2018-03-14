@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.IO;
+using System.Drawing.Imaging;
 
 namespace GifRecorder.Services
 {
@@ -20,7 +21,7 @@ namespace GifRecorder.Services
 
         public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval)
         {
-            await this.captureScreenSequence(seconds, ax, ay, bx, by, timeInterval);
+            await this.captureScreenSequenceApng(seconds, ax, ay, bx, by, timeInterval);
         }
 
         private async Task captureScreenSequence(int seconds, int ax, int ay, int bx, int by, int timeInterval)
@@ -49,6 +50,36 @@ namespace GifRecorder.Services
                 this.stepAction.Invoke(-1);
                 IsRunning = false;
             }
+        }
+
+        private async Task captureScreenSequenceApng(int seconds, int ax, int ay, int bx, int by, int timeInterval)
+        {
+            using (var pngWriter = new PngWriter(this.stream, bx, by, timeInterval, 0))
+            {
+                Cancel = false;
+                IsRunning = true;
+                var imageCount = seconds * 1000 / timeInterval;
+                var time = 0L;
+                this.stepAction.Invoke(3);
+                for (int i = 0; i < imageCount; i++)
+                {
+                    if (Cancel)
+                        break;
+                    time = timeInterval - time < 0 ? 0 : timeInterval - time;
+                    await Task.Delay((int)(time)).ContinueWith((t) =>
+                    {
+                        stepAction.Invoke(time == 0 ? 0 : 1);
+                        var time2 = DateTime.Now.Ticks / 10000;
+                        var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
+
+                        pngWriter.WriteFrame(image);
+                        time = DateTime.Now.Ticks / 10000 - time2;
+                    });
+                }
+                this.stepAction.Invoke(-1);
+                IsRunning = false;
+            }
+            this.stream.Close();
         }
     }
 }
