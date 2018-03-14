@@ -31,7 +31,7 @@ namespace GifRecorder.Services
             if (DefaultFrameDelay <= 0)
                 throw new ArgumentOutOfRangeException(nameof(DefaultFrameDelay));
 
-            if (Repeat < -1)
+            if (Repeat < 0)
                 throw new ArgumentOutOfRangeException(nameof(Repeat));
 
             _writer = new BinaryWriter(OutStream);
@@ -51,9 +51,13 @@ namespace GifRecorder.Services
             write(signature);
         }
 
-        private void write_IHDR() // Image Header
+        private void write_IHDR(Stream png) // Image Header
         {
-            _writer.Write("dfa".ToCharArray());
+            Byte[] ihdr = find_IDAT(png);
+            if (ihdr != null)
+            {
+                write(ihdr);
+            }
         }
 
         private void write_acTL() // Animation Control Chunk
@@ -88,10 +92,48 @@ namespace GifRecorder.Services
 
         private void write_IDAT(Stream png)
         {
+            Byte[] idat = find_IDAT(png);
+            if (idat != null)
+            {
+                write(idat);
+            }
         }
 
         private void write_fdAT(Stream png)
         {
+        }
+
+        private Byte[] find_IHDR(Stream png)
+        {
+            return find(png, "IHDR".ToCharArray());
+        }
+
+        private Byte[] find_IDAT(Stream png)
+        {
+            return find(png, "IDAT".ToCharArray());
+        }
+
+        private Byte[] find(Stream png, Char[] search)
+        {
+            Char[] result = null;
+            using (var reader = new StreamReader(png))
+            {
+                Char[] bytes = null;
+                int i = 0;
+                while (bytes != search && i < png.Length - 4)
+                {
+                    reader.ReadBlock(bytes, i, search.Length);
+                    i++;
+                    if(bytes == search)
+                    {
+                        Char[] rawLength = null;
+                        reader.ReadBlock(rawLength, i - 4, 4);
+                        int length = BitConverter.ToInt32(rawLength.Select(c => (byte)c).ToArray(), 0);
+                        reader.ReadBlock(result, i - 4, length + 16);
+                    }
+                }                
+            }
+            return result?.Select(c => (byte)c).ToArray();
         }
 
         private void write(Byte[] data)
