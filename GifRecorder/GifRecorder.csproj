@@ -94,6 +94,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\CrcCalculator.cs" />
     <Compile Include="Services\DpiGetter.cs" />
     <Compile Include="Services\PngWriter.cs" />
     <Compile Include="Views\SectionView.xaml.cs">
