@@ -134,10 +134,29 @@ namespace GifRecorder.Services
         private void write_fdAT(Stream png)
         {
             Byte[] idat = find_IDAT(png);
-            idat = idat.Take(idat.Count() - 4).ToArray();
             if (idat != null)
             {
-                write(idat);
+                Byte[] _FrameCount = BitConverter.GetBytes((int)FrameCount-2);
+                Array.Reverse(_FrameCount);
+                var length = idat.Count() + 4;
+                var lengthArray = BitConverter.GetBytes(length);
+                Array.Reverse(lengthArray);
+                Byte[] fdAT = new byte[idat.Count() + 4];
+                Byte[] fdAT2 = new byte[idat.Count()];
+                lengthArray.CopyTo(fdAT, 0);
+                var sign = "fdAT".ToCharArray().Select(c => (byte)c).ToArray();
+                sign.CopyTo(fdAT2, 4);
+                _FrameCount.CopyTo(fdAT2, 8);
+                idat = idat.Take(idat.Count() - 4).ToArray();
+                idat = idat.Skip(8).ToArray();
+                idat.CopyTo(fdAT2, 8);
+                var crc32 = new CrcCalculator();
+                var crc = crc32.GetCRC32(fdAT2);
+                fdAT2.CopyTo(fdAT,4);
+                var crcArray = BitConverter.GetBytes(crc);
+                _writer.Write(fdAT);
+                Array.Reverse(crcArray);
+                _writer.Write(crcArray);
             }
         }
 
@@ -219,7 +238,7 @@ namespace GifRecorder.Services
                     write_acTL();
                 }
                 write_fcTL();
-                if (FrameCount == 0)
+                if (FrameCount == 1)
                     write_IDAT(png);
                 else
                     write_fdAT(png);
