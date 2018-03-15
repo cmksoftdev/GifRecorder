@@ -74,13 +74,16 @@ namespace GifRecorder.Services
             _writer.Write("acTL".ToCharArray());
             _writer.Write(0); // Number of frames
             _writer.Write((byte)Repeat); // Number of times to loop this APNG.  0 indicates infinite looping.
+            _writer.Write((byte)0);
+            _writer.Write((byte)0);
+            _writer.Write((byte)0);
             _writer.Write(0);
         }
 
         private void write_fcTL() // Frame Control Chunk
         {
             List<Byte> chunk = new List<byte>();
-            chunk.AddRange(new Byte[]{ 0, 0, 0, 8});
+            chunk.AddRange(new Byte[]{ 0, 0, 0, 26 });
             chunk.AddRange("fcTL".ToCharArray().Select(c => (byte)c).ToArray());
             _writer.Write((byte)0);
             _writer.Write((byte)0);
@@ -113,7 +116,9 @@ namespace GifRecorder.Services
             chunk.AddRange(new Byte[] { 0, 0, 0, 0 });
             CrcCalculator crc32 = new CrcCalculator();
             var crc = crc32.GetCRC32(chunk.ToArray());
-            _writer.Write(crc);
+            var crcArray = BitConverter.GetBytes(crc);
+            Array.Reverse(crcArray);
+            _writer.Write(crcArray);
             FrameCount++;
         }
 
@@ -169,6 +174,7 @@ namespace GifRecorder.Services
                     result = new Byte[length + 12];
                     png.Position -= 4;
                     png.Read(result, 0, (int)(length + 12));
+                    break;
                 }
             }
             return result;
@@ -186,15 +192,20 @@ namespace GifRecorder.Services
                 0,0,0,8
             };
             chunk.AddRange("acTL".ToCharArray().Select(c => (byte)c).ToArray());
-            Byte[] _FrameCount = BitConverter.GetBytes(FrameCount);
+            Byte[] _FrameCount = BitConverter.GetBytes((int)FrameCount);
             Array.Reverse(_FrameCount);
             chunk.AddRange(_FrameCount);
-            chunk.Add((byte)Repeat);
+            Byte[] _Repeat = BitConverter.GetBytes(Repeat);
+            Array.Reverse(_Repeat);
+            chunk.AddRange(_Repeat);
             _writer.Seek((int)FrameCountPosition, SeekOrigin.Begin);
             _writer.Write(chunk.ToArray());
             var crc32 = new CrcCalculator();
             var crc = crc32.GetCRC32(chunk.ToArray());
-            _writer.Write(crc);
+            var crcArray = BitConverter.GetBytes(crc);
+            Array.Reverse(crcArray);
+            _writer.Write(crcArray);
+            FrameCount++;
         }
 
         public void WriteFrame(Image image)
