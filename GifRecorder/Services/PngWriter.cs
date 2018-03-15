@@ -73,10 +73,10 @@ namespace GifRecorder.Services
             _writer.Write((byte)8);
             _writer.Write("acTL".ToCharArray());
             _writer.Write(0); // Number of frames
+            _writer.Write((byte)0);
+            _writer.Write((byte)0);
+            _writer.Write((byte)0);
             _writer.Write((byte)Repeat); // Number of times to loop this APNG.  0 indicates infinite looping.
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
             _writer.Write(0);
         }
 
@@ -85,39 +85,29 @@ namespace GifRecorder.Services
             List<Byte> chunk = new List<byte>();
             chunk.AddRange(new Byte[]{ 0, 0, 0, 26 });
             chunk.AddRange("fcTL".ToCharArray().Select(c => (byte)c).ToArray());
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)26);
-            _writer.Write("fcTL".ToCharArray());
             Byte[] _FrameCount = BitConverter.GetBytes((int)FrameCount);
             Array.Reverse(_FrameCount);
-            _writer.Write(_FrameCount); // Sequence number of the animation chunk, starting from 0
             chunk.AddRange(_FrameCount);
             Byte[] _x = BitConverter.GetBytes(x);
             Array.Reverse(_x);
-            _writer.Write(_x); // Width of the following frame
             chunk.AddRange(_x);
             Byte[] _y = BitConverter.GetBytes(y);
             Array.Reverse(_y);
             chunk.AddRange(_y);
-            _writer.Write(_y); // Height of the following frame
-            _writer.Write(0); // X position at which to render the following frame
-            _writer.Write(0); // Y position at which to render the following frame
             chunk.AddRange(new Byte[] { 0, 0, 0, 0 });
             chunk.AddRange(new Byte[] { 0, 0, 0, 0 });
             Byte[] _DefaultFrameDelay = BitConverter.GetBytes((short)DefaultFrameDelay);
             Array.Reverse(_DefaultFrameDelay);
+            Byte[] _FrameCount2 = BitConverter.GetBytes((short)FrameCount);
+            Array.Reverse(_FrameCount2);
+            chunk.AddRange(_FrameCount2);
             chunk.AddRange(_DefaultFrameDelay);
-            _writer.Write(_DefaultFrameDelay); // Frame delay fraction numerator
-            _writer.Write((short)0); // Frame delay fraction denominator
-            _writer.Write((byte)0); // Type of frame area disposal to be done after rendering this frame
-            _writer.Write((byte)0); // Type of frame area rendering for this frame
-            chunk.AddRange(new Byte[] { 0, 0, 0, 0 });
+            chunk.AddRange(new Byte[] { 0, 0});
             CrcCalculator crc32 = new CrcCalculator();
             var crc = crc32.GetCRC32(chunk.ToArray());
             var crcArray = BitConverter.GetBytes(crc);
             Array.Reverse(crcArray);
+            _writer.Write(chunk.ToArray());
             _writer.Write(crcArray);
             FrameCount++;
         }
@@ -140,6 +130,17 @@ namespace GifRecorder.Services
             }
         }
 
+        //TODO complete method
+        private void write_fdAT(Stream png)
+        {
+            Byte[] idat = find_IDAT(png);
+            idat = idat.Take(idat.Count() - 4).ToArray();
+            if (idat != null)
+            {
+                write(idat);
+            }
+        }
+
         private Byte[] find_IHDR(Stream png)
         {
             return find(png, "IHDR".ToCharArray());
@@ -156,9 +157,7 @@ namespace GifRecorder.Services
             var searchBytes = search.Select(c => (byte)c).ToArray();
             Byte[] bytes = new Byte[search.Length];
             int i = 0;
-            Stream stream = new MemoryStream((int)png.Length);
-            png.CopyTo(stream);
-            while (bytes != searchBytes && i < png.Length - 4)
+            while (i < png.Length - 4)
             {
                 png.Flush();
                 png.Position = i;
@@ -220,7 +219,10 @@ namespace GifRecorder.Services
                     write_acTL();
                 }
                 write_fcTL();
-                write_IDAT(png);
+                if (FrameCount == 0)
+                    write_IDAT(png);
+                else
+                    write_fdAT(png);
             }
         }
 
