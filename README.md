@@ -9,3 +9,5 @@ The gif below shows how to use the tool.
 
 
 You can also download the newest setup build from http://cmk.bplaced.net/
+
+- Animated PNG format supported
