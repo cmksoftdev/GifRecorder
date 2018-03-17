@@ -14,11 +14,11 @@
         <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Aufnahmezeit in Sekunden:</Label>
-                <TextBox x:Name="Seconds" Text="10" TextAlignment="Center" HorizontalAlignment="Stretch" Width="40" Height="18"/>
+                <TextBox x:Name="Seconds" Text="5" TextAlignment="Center" HorizontalAlignment="Stretch" Width="40" Height="18"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Bilder pro Sekunde:</Label>
-                <TextBox x:Name="FPS" Text="10" TextAlignment="Center" HorizontalAlignment="Right" Width="40"  Height="18"/>
+                <TextBox x:Name="FPS" Text="4" TextAlignment="Center" HorizontalAlignment="Right" Width="40"  Height="18"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Left" Width="75">Dateiname:</Label>

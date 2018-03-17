@@ -56,6 +56,7 @@ namespace GifRecorder.Services
         {
             using (var pngWriter = new PngWriter(this.stream, bx, by, timeInterval, 0))
             {
+                var imageChangeAnalyser = new ImageChangeAnalyser();
                 Cancel = false;
                 IsRunning = true;
                 var imageCount = seconds * 1000 / timeInterval;
@@ -71,8 +72,24 @@ namespace GifRecorder.Services
                         stepAction.Invoke(time == 0 ? 0 : 1);
                         var time2 = DateTime.Now.Ticks / 10000;
                         var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
+                        if (false)//for later use
+                        {
+                            var changes = imageChangeAnalyser.GetChanges(image);
+                            if (changes.SizeX == 0 || changes.SizeY == 0)
+                            {
+                                changes.SizeX = 2;
+                                changes.SizeY = 2;
+                                changes.OffsetX = changes.OffsetX > 4 ? changes.OffsetX - 2 : 2;
+                                changes.OffsetY = changes.OffsetY > 4 ? changes.OffsetY - 2 : 2;
+                            }
+                            var newImage = imageChangeAnalyser.GetPartialImage(image, changes);
+                            pngWriter.WriteFrame(newImage, changes.OffsetX, changes.OffsetY);
+                        }
+                        else
+                        {
+                            pngWriter.WriteFrame(image);
+                        }
 
-                        pngWriter.WriteFrame(image);
                         time = DateTime.Now.Ticks / 10000 - time2;
                     });
                 }

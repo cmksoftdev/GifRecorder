@@ -89,6 +89,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\DpiContainer.cs" />
+    <Compile Include="Models\SizeOffset.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -96,6 +97,7 @@
     </Compile>
     <Compile Include="Services\CrcCalculator.cs" />
     <Compile Include="Services\DpiGetter.cs" />
+    <Compile Include="Services\ImageChangeAnalyser.cs" />
     <Compile Include="Services\PngWriter.cs" />
     <Compile Include="Views\SectionView.xaml.cs">
       <DependentUpon>SectionView.xaml</DependentUpon>
