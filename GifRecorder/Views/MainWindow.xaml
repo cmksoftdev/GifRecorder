@@ -25,8 +25,9 @@
                 <Button x:Name="AusgabedateiAnzeigen" Click="Button_Click_2" Width="139" IsEnabled="False">Ausgabedatei anzeigen</Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Right" Width="150" Height="18"></TextBox>
-                <Label Foreground="Gray">.gif</Label>
+                <TextBox x:Name="FileName" Text="Aufnahme1" TextAlignment="Right" Width="119" Height="18"></TextBox>
+                <RadioButton x:Name="Png" GroupName="Format" Content=".png" Width="45" IsChecked="True"/>
+                <RadioButton GroupName="Format" Content=".gif" Width="45"/>
             </StackPanel>
             <Button x:Name="StartStopButton" Click="Button_Click">Start</Button>
             <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>

@@ -27,8 +27,9 @@ namespace GifRecorder
             int fps;
             if (int.TryParse(this.Seconds.Text, out seconds) && int.TryParse(this.FPS.Text, out fps))
             {
+                var format = this.Png.IsChecked == true ? 1 : 0;
                 this.isRunning = true;
-                ((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000 / fps, PresentationSource.FromVisual(this));
+                ((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000 / fps, PresentationSource.FromVisual(this), format);
                 this.isRunning = false;
             }
         }

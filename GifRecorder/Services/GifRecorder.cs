@@ -19,9 +19,12 @@ namespace GifRecorder.Services
             this.stepAction = action;
         }
 
-        public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval)
+        public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval, int format = 1)
         {
-            await this.captureScreenSequenceApng(seconds, ax, ay, bx, by, timeInterval);
+            if (format==1)
+                await this.captureScreenSequenceApng(seconds, ax, ay, bx, by, timeInterval);
+            else
+                await this.captureScreenSequence(seconds, ax, ay, bx, by, timeInterval);
         }
 
         private async Task captureScreenSequence(int seconds, int ax, int ay, int bx, int by, int timeInterval)
