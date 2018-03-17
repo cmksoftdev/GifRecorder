@@ -52,7 +52,32 @@ namespace GifRecorder.Services
                 OffsetY = 0,
                 SizeX = x,
                 SizeY = y
-            }; ;
+            };
+        }
+
+        public Image BlackoutImage(Image newImage)
+        {
+            var newImageBmp = new Bitmap(newImage);
+            var x = newImage.Width;
+            var y = newImage.Height;
+            var newImage2 = new Bitmap(newImageBmp);
+            if (oldImage != null)
+            {
+                for (int i = 0; i < x; i++)
+                {
+                    for (int j = 0; j < y; j++)
+                    {
+                        Color a = oldImage.GetPixel(i, j);
+                        Color b = newImageBmp.GetPixel(i, j);
+                        if (isColorEqual(a, b))
+                        {
+                            newImageBmp.SetPixel(i, j, Color.Transparent);
+                        }
+                    }
+                }
+            }
+            oldImage = newImage2;
+            return newImageBmp;
         }
 
         public Image GetPartialImage(Image image, SizeOffset sizeOffset)

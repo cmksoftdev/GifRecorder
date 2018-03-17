@@ -88,9 +88,14 @@ namespace GifRecorder.Services
                             var newImage = imageChangeAnalyser.GetPartialImage(image, changes);
                             pngWriter.WriteFrame(newImage, changes.OffsetX, changes.OffsetY);
                         }
-                        else
+                        else if(false)
                         {
                             pngWriter.WriteFrame(image);
+                        }
+                        else
+                        {
+                            var newImage = imageChangeAnalyser.BlackoutImage(image);
+                            pngWriter.WriteFrame(newImage);
                         }
 
                         time = DateTime.Now.Ticks / 10000 - time2;
