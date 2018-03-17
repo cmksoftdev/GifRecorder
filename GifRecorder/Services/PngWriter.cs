@@ -22,6 +22,7 @@ namespace GifRecorder.Services
 
         private long FrameCountPosition { get; set; }
         private long FrameCount { get; set; }
+        private int ChunkSequenceNumber { get; set; }
         private int x { get; }
         private int y { get; }
         #endregion
@@ -41,6 +42,7 @@ namespace GifRecorder.Services
             this.DefaultFrameDelay = DefaultFrameDelay;
             this.Repeat = Repeat;
             FrameCount = 0;
+            ChunkSequenceNumber = 0;
             this.x = x;
             this.y = y;
             this.OutStream = OutStream;
@@ -64,7 +66,7 @@ namespace GifRecorder.Services
             }
         }
 
-        private void write_acTL() // Animation Control Chunk
+        private void write_acTL_placeholder() // Animation Control Chunk
         {
             FrameCountPosition = _writer.BaseStream.Position;
             _writer.Write((byte)0);
@@ -85,9 +87,9 @@ namespace GifRecorder.Services
             List<Byte> chunk = new List<byte>();
             chunk.AddRange(new Byte[]{ 0, 0, 0, 26 });
             chunk.AddRange("fcTL".ToCharArray().Select(c => (byte)c).ToArray());
-            Byte[] _FrameCount = BitConverter.GetBytes((int)FrameCount);
-            Array.Reverse(_FrameCount);
-            chunk.AddRange(_FrameCount);
+            Byte[] _ChunkSequenceNumber = BitConverter.GetBytes(ChunkSequenceNumber);
+            Array.Reverse(_ChunkSequenceNumber);
+            chunk.AddRange(_ChunkSequenceNumber);
             Byte[] _x = BitConverter.GetBytes(x);
             Array.Reverse(_x);
             chunk.AddRange(_x);
@@ -100,16 +102,17 @@ namespace GifRecorder.Services
             Array.Reverse(_DefaultFrameDelay);
             Byte[] _FrameCount2 = BitConverter.GetBytes((short)FrameCount);
             Array.Reverse(_FrameCount2);
-            chunk.AddRange(_FrameCount2);
             chunk.AddRange(_DefaultFrameDelay);
-            chunk.AddRange(new Byte[] { 0, 0});
+            chunk.AddRange(new Byte[] { 3, 232 });
+            chunk.AddRange(new Byte[] { 2, 0});
             CrcCalculator crc32 = new CrcCalculator();
-            var crc = crc32.GetCRC32(chunk.ToArray());
+            var crc = crc32.GetCRC32(chunk.Skip(4).ToArray());
             var crcArray = BitConverter.GetBytes(crc);
             Array.Reverse(crcArray);
             _writer.Write(chunk.ToArray());
             _writer.Write(crcArray);
             FrameCount++;
+            ChunkSequenceNumber++;
         }
 
         private void write_IEND()
@@ -129,34 +132,33 @@ namespace GifRecorder.Services
                 write(idat);
             }
         }
-
-        //TODO complete method
+        
         private void write_fdAT(Stream png)
         {
             Byte[] idat = find_IDAT(png);
             if (idat != null)
             {
-                Byte[] _FrameCount = BitConverter.GetBytes((int)FrameCount-2);
-                Array.Reverse(_FrameCount);
-                var length = idat.Count() + 4;
+                Byte[] _ChunkSequenceNumber = BitConverter.GetBytes(ChunkSequenceNumber);
+                Array.Reverse(_ChunkSequenceNumber);
+                var length = idat.Count() - 8;
                 var lengthArray = BitConverter.GetBytes(length);
                 Array.Reverse(lengthArray);
-                Byte[] fdAT = new byte[idat.Count() + 4];
-                Byte[] fdAT2 = new byte[idat.Count()];
+                Byte[] fdAT = new byte[idat.Count()];
                 lengthArray.CopyTo(fdAT, 0);
                 var sign = "fdAT".ToCharArray().Select(c => (byte)c).ToArray();
-                sign.CopyTo(fdAT2, 4);
-                _FrameCount.CopyTo(fdAT2, 8);
+                sign.CopyTo(fdAT, 4);
+                _ChunkSequenceNumber.CopyTo(fdAT, 8);
                 idat = idat.Take(idat.Count() - 4).ToArray();
                 idat = idat.Skip(8).ToArray();
-                idat.CopyTo(fdAT2, 8);
+                idat.CopyTo(fdAT, 12);
                 var crc32 = new CrcCalculator();
-                var crc = crc32.GetCRC32(fdAT2);
-                fdAT2.CopyTo(fdAT,4);
+                var data = fdAT.Skip(4).ToArray();
+                var crc = crc32.GetCRC32(data);
                 var crcArray = BitConverter.GetBytes(crc);
                 _writer.Write(fdAT);
                 Array.Reverse(crcArray);
                 _writer.Write(crcArray);
+                ChunkSequenceNumber++;
             }
         }
 
@@ -203,7 +205,7 @@ namespace GifRecorder.Services
             _writer.Write(data);
         }
 
-        private void writeFrameCount()
+        private void write_acTL()
         {
             List<byte> chunk = new List<byte>()
             {
@@ -219,7 +221,7 @@ namespace GifRecorder.Services
             _writer.Seek((int)FrameCountPosition, SeekOrigin.Begin);
             _writer.Write(chunk.ToArray());
             var crc32 = new CrcCalculator();
-            var crc = crc32.GetCRC32(chunk.ToArray());
+            var crc = crc32.GetCRC32(chunk.Skip(4).ToArray());
             var crcArray = BitConverter.GetBytes(crc);
             Array.Reverse(crcArray);
             _writer.Write(crcArray);
@@ -235,7 +237,7 @@ namespace GifRecorder.Services
                 {
                     write_Signature();
                     write_IHDR(png);
-                    write_acTL();
+                    write_acTL_placeholder();
                 }
                 write_fcTL();
                 if (FrameCount == 1)
@@ -248,7 +250,7 @@ namespace GifRecorder.Services
         public void Dispose()
         {
             write_IEND();
-            writeFrameCount();
+            write_acTL();
         }
     }
 }
