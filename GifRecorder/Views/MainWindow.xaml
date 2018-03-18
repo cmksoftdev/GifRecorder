@@ -42,12 +42,12 @@
         <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Column="2">
             <Label>Filteroptionen:</Label>
             <RadioButton x:Name="Option1" GroupName="Option" Content="Jedes Bild rendern" Width="180" IsChecked="{Binding Path=O1, Mode=OneWayToSource}"/>
-            <RadioButton x:Name="Option2" GroupName="Option" Content="Nur Änderungen rendern" Width="180" IsChecked="{Binding Path=O2, Mode=OneWayToSource, TargetNullValue=true}"/>
+            <RadioButton x:Name="Option2" GroupName="Option" Content="Nur Änderungen rendern" Width="180" IsChecked="{Binding Path=O2, Mode=OneWayToSource, FallbackValue=true}"/>
             <RadioButton x:Name="Option3" GroupName="Option" Content="Nur jeden 4. Pixel prüfen" Width="180" IsChecked="{Binding Path=O3, Mode=OneWayToSource}"/>
             <Label>Arbeitsweise:</Label>
-            <RadioButton x:Name="Option4" GroupName="Option2" Content="Bildverarbeitung zur Laufzeit" Width="180" IsChecked="{Binding Path=O3, Mode=OneWayToSource, TargetNullValue=true}"/>
-            <RadioButton x:Name="Option5" GroupName="Option2" Content="Spätere Bildverarbeitung(RAM)" Width="180" IsChecked="{Binding Path=O4, Mode=OneWayToSource}"/>
-            <RadioButton x:Name="Option6" GroupName="Option2" Content="Spätere Bildverarbeitung(HD)" Width="180" IsChecked="{Binding Path=O5, Mode=OneWayToSource}"/>
+            <RadioButton x:Name="Option4" GroupName="Option2" Content="Bildverarbeitung zur Laufzeit" Width="180" IsChecked="{Binding Path=O4, Mode=OneWayToSource}"/>
+            <RadioButton x:Name="Option5" GroupName="Option2" Content="Spätere Bildverarbeitung(RAM)" Width="180" IsChecked="{Binding Path=O5, Mode=OneWayToSource}"/>
+            <RadioButton x:Name="Option6" GroupName="Option2" Content="Spätere Bildverarbeitung(HD)" Width="180" IsChecked="{Binding Path=O6, Mode=OneWayToSource, FallbackValue=true}"/>
         </StackPanel>
     </Grid>
 </Window>

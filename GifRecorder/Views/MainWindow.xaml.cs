@@ -62,7 +62,7 @@ namespace GifRecorder
                     this.Dispatcher.Invoke(() =>
                     {
                         this.Status.Foreground = Brushes.Black;
-                        this.Status.Content = "Bilder werden verarbeitet";
+                        this.Status.Content = "Bilder werden verarbeitet...";
                     });
                     return;
                 default:
