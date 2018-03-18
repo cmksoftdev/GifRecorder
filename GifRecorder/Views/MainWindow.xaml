@@ -6,15 +6,20 @@
         xmlns:local="clr-namespace:GifRecorder"
         mc:Ignorable="d"
         Title="Gif Screen Recorder" Foreground="AliceBlue" Height="210" Width="230" Background="Azure" ResizeMode="NoResize" Icon="/GifRecorder;component/Resources/cmkicon.ico">
-    <Grid>
+    <Grid x:Name="MenuGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="230"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="29*"/>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.ColumnSpan="2">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.ColumnSpan="1" Grid.Row="0">
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Aufnahmezeit in Sekunden:</Label>
                 <TextBox x:Name="Seconds" Text="5" TextAlignment="Center" HorizontalAlignment="Stretch" Width="40" Height="18"/>
+                <Button Click="Button_Click3"></Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Bilder pro Sekunde:</Label>
@@ -32,6 +37,16 @@
             <Button x:Name="StartStopButton" Click="Button_Click">Start</Button>
             <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>
             <Label x:Name="Status" Content="Startbereit" HorizontalAlignment="Center"></Label>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Column="2">
+            <Label>Filteroptionen:</Label>
+            <RadioButton x:Name="Option1" GroupName="Option" Content="Jedes Bild rendern" Width="180" IsChecked="{Binding Path=O1, Mode=OneWayToSource}"/>
+            <RadioButton x:Name="Option2" GroupName="Option" Content="Nur Änderungen rendern" Width="180" IsChecked="{Binding Path=O2, Mode=OneWayToSource, TargetNullValue=true}"/>
+            <RadioButton x:Name="Option3" GroupName="Option" Content="Nur jeden 4. Pixel prüfen" Width="180" IsChecked="{Binding Path=O3, Mode=OneWayToSource}"/>
+            <Label>Arbeitsweise:</Label>
+            <RadioButton x:Name="Option4" GroupName="Option2" Content="Bildverarbeitung zur Laufzeit" Width="180" IsChecked="{Binding Path=O3, Mode=OneWayToSource, TargetNullValue=true}"/>
+            <RadioButton x:Name="Option5" GroupName="Option2" Content="Spätere Bildverarbeitung(RAM)" Width="180" IsChecked="{Binding Path=O4, Mode=OneWayToSource}"/>
+            <RadioButton x:Name="Option6" GroupName="Option2" Content="Spätere Bildverarbeitung(HD)" Width="180" IsChecked="{Binding Path=O5, Mode=OneWayToSource}"/>
         </StackPanel>
     </Grid>
 </Window>

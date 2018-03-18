@@ -106,5 +106,11 @@ namespace GifRecorder
             string argument = "/select, \"" + filePath + "\"";
             System.Diagnostics.Process.Start("explorer.exe", argument);
         }
+
+        private void Button_Click3(object sender, RoutedEventArgs e)
+        {
+            this.MenuGrid.ColumnDefinitions[1].Width = this.MenuGrid.ColumnDefinitions[1].Width == GridLength.Auto ? new GridLength(0) : GridLength.Auto;
+            this.Width = this.Width == 430 ? 230 : 430;
+        }
     }
 }

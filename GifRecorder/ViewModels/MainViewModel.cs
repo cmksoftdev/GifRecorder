@@ -19,7 +19,15 @@ namespace GifRecorder.ViewModels
 
         public string FilePath { get; private set; }
 
-        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval, PresentationSource source, int format)
+        public bool O1 { get; set; }
+        public bool O2 { get; set; }
+        public bool O3 { get; set; }
+
+        public bool O4 { get; set; }
+        public bool O5 { get; set; }
+        public bool O6 { get; set; }
+
+        public async Task<bool> StartRecorder(int seconds, string fileName, Action<int> action, int timeInterval, PresentationSource source, int option, int format)
         {
             fileName += format == 1 ? ".png" : ".gif";
             FilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + fileName;
@@ -35,7 +43,8 @@ namespace GifRecorder.ViewModels
             BY = (int)(BY * 96.0 / dpi.DpiY);
             var stream = new FileStream(FilePath, FileMode.Create);
             gifRecorder = new GifRec(stream, action);
-            await gifRecorder.Start(seconds, AX, AY, BX, BY, timeInterval, format);
+            int option2 = !O4 ? (!O5 ? 3 : 2) : 1;
+            await gifRecorder.Start(seconds, AX, AY, BX, BY, timeInterval, option, option2, format);
             return true;
         }
 
@@ -48,7 +57,8 @@ namespace GifRecorder.ViewModels
             }
             else
             {
-                StartRecorder(seconds, fileName, action, timeInterval, source, format);
+                int option = !O1 ? (!O2 ? 3 : 2) : 1;
+                StartRecorder(seconds, fileName, action, timeInterval, source, option, format);
                 return true;
             }
         }

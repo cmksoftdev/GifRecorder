@@ -26,7 +26,7 @@ namespace GifRecorder.Services
             };
             var isChanged = false;
             if (oldImage != null)
-            {                
+            {
                 for (int i = 0; i < x; i++)
                 {
                     for (int j = 0; j < y; j++)
@@ -54,9 +54,49 @@ namespace GifRecorder.Services
                 SizeY = y
             };
         }
+        private bool isB = false;
+        public Image BlackoutImage(Image newImage, int step)
+        {
+            int s = 0;// isB ? 1 : 0;
+            isB = !isB;
+            var newImageBmp = new Bitmap(newImage);
+            var x = newImage.Width;
+            var y = newImage.Height;
+            var newImage2 = new Bitmap(newImageBmp);
+            if (oldImage != null)
+            {
+                for (int i = 0; i < x-4; i += 4)
+                {
+                    for (int j = 0; j < y-4; j += 4)
+                    {
+                        Color a = oldImage.GetPixel(i+s, j + s);
+                        Color b = newImageBmp.GetPixel(i+s, j + s);
+                        if (isColorEqual(a, b))
+                        {
+                            set_transparent(newImageBmp, i, j);
+                        }
+                    }
+                }
+            }
+            oldImage = newImage2;
+            return newImageBmp;
+        }
+
+        private void set_transparent(Bitmap bmp, int x, int y)
+        {
+            for (int i=0;i<4;i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    bmp.SetPixel(i+x, j+y, Color.Transparent);
+                }
+            }
+        }
 
         public Image BlackoutImage(Image newImage)
         {
+            if (newImage == null)
+                return null;
             var newImageBmp = new Bitmap(newImage);
             var x = newImage.Width;
             var y = newImage.Height;
@@ -85,8 +125,8 @@ namespace GifRecorder.Services
             Bitmap original = new Bitmap(image);
             Rectangle srcRect = new Rectangle(
                 sizeOffset.OffsetX,
-                sizeOffset.OffsetY, 
-                sizeOffset.SizeX, 
+                sizeOffset.OffsetY,
+                sizeOffset.SizeX,
                 sizeOffset.SizeY);
             return sizeOffset.SizeX == 0 || sizeOffset.SizeY == 0 ?
                 null : original.Clone(srcRect, original.PixelFormat);

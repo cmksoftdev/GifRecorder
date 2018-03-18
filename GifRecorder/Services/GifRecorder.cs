@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using System.IO;
 using System.Drawing.Imaging;
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace GifRecorder.Services
 {
@@ -19,10 +21,10 @@ namespace GifRecorder.Services
             this.stepAction = action;
         }
 
-        public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval, int format = 1)
+        public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval,int option, int option2, int format = 1)
         {
             if (format==1)
-                await this.captureScreenSequenceApng(seconds, ax, ay, bx, by, timeInterval);
+                await this.captureScreenSequenceApng(seconds, ax, ay, bx, by, timeInterval, option, option2);
             else
                 await this.captureScreenSequence(seconds, ax, ay, bx, by, timeInterval);
         }
@@ -55,7 +57,7 @@ namespace GifRecorder.Services
             }
         }
 
-        private async Task captureScreenSequenceApng(int seconds, int ax, int ay, int bx, int by, int timeInterval)
+        private async Task captureScreenSequenceApng(int seconds, int ax, int ay, int bx, int by, int timeInterval, int option, int option2)
         {
             using (var pngWriter = new PngWriter(this.stream, bx, by, timeInterval, 0))
             {
@@ -65,42 +67,79 @@ namespace GifRecorder.Services
                 var imageCount = seconds * 1000 / timeInterval;
                 var time = 0L;
                 this.stepAction.Invoke(3);
-                for (int i = 0; i < imageCount; i++)
+                List<Image> imageList = new List<Image>();
+                using (var imageStore = new ImageStore())
                 {
-                    if (Cancel)
-                        break;
-                    time = timeInterval - time < 0 ? 0 : timeInterval - time;
-                    await Task.Delay((int)(time)).ContinueWith((t) =>
+                    for (int i = 0; i < imageCount; i++)
                     {
-                        stepAction.Invoke(time == 0 ? 0 : 1);
-                        var time2 = DateTime.Now.Ticks / 10000;
-                        var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
-                        if (false)//for later use
+                        if (Cancel)
+                            break;
+                        time = timeInterval - time < 0 ? 0 : timeInterval - time;
+                        await Task.Delay((int)(time)).ContinueWith((t) =>
                         {
-                            var changes = imageChangeAnalyser.GetChanges(image);
-                            if (changes.SizeX == 0 || changes.SizeY == 0)
+                            stepAction.Invoke(time == 0 ? 0 : 1);
+                            var time2 = DateTime.Now.Ticks / 10000;
+                            var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
+                            if (option2==3)
                             {
-                                changes.SizeX = 2;
-                                changes.SizeY = 2;
-                                changes.OffsetX = changes.OffsetX > 4 ? changes.OffsetX - 2 : 2;
-                                changes.OffsetY = changes.OffsetY > 4 ? changes.OffsetY - 2 : 2;
+                                imageList.Add(image);
                             }
-                            var newImage = imageChangeAnalyser.GetPartialImage(image, changes);
-                            pngWriter.WriteFrame(newImage, changes.OffsetX, changes.OffsetY);
-                        }
-                        else if(false)
+                            else if (option2 == 2)
+                            {
+                                imageStore.SetImage(image);
+                            }
+                            else
+                            {
+                                if (option == 0)//for later use
+                                {
+                                    var changes = imageChangeAnalyser.GetChanges(image);
+                                    if (changes.SizeX == 0 || changes.SizeY == 0)
+                                    {
+                                        changes.SizeX = 2;
+                                        changes.SizeY = 2;
+                                        changes.OffsetX = changes.OffsetX > 4 ? changes.OffsetX - 2 : 2;
+                                        changes.OffsetY = changes.OffsetY > 4 ? changes.OffsetY - 2 : 2;
+                                    }
+                                    var newImage = imageChangeAnalyser.GetPartialImage(image, changes);
+                                    pngWriter.WriteFrame(newImage, changes.OffsetX, changes.OffsetY);
+                                }
+                                else if (option == 1)
+                                {
+                                    pngWriter.WriteFrame(image);
+                                }
+                                else if (option == 2)
+                                {
+                                    var newImage = imageChangeAnalyser.BlackoutImage(image);
+                                    pngWriter.WriteFrame(newImage);
+                                }
+                                else
+                                {
+                                    var newImage = imageChangeAnalyser.BlackoutImage(image, 1);
+                                    pngWriter.WriteFrame(newImage);
+                                }
+                            }
+                            time = DateTime.Now.Ticks / 10000 - time2;
+                        });
+                    }
+                    if (option2 == 2)
+                    {
+                        var count = imageStore.ImageCount;
+                        for (int i = 0; i < count; i++)
                         {
-                            pngWriter.WriteFrame(image);
+                            var image = imageStore.GetImage(i);
+                            var image2 = imageChangeAnalyser.BlackoutImage(image);
+                            pngWriter.WriteFrame(image2);
                         }
-                        else
+                    }
+                    else if (option2==3)
+                    {
+                        foreach (var image in imageList)
                         {
-                            var newImage = imageChangeAnalyser.BlackoutImage(image);
-                            pngWriter.WriteFrame(newImage);
+                            var image2 = imageChangeAnalyser.BlackoutImage(image);
+                            pngWriter.WriteFrame(image2);
                         }
-
-                        time = DateTime.Now.Ticks / 10000 - time2;
-                    });
-                }
+                    }
+                } 
                 this.stepAction.Invoke(-1);
                 IsRunning = false;
             }
