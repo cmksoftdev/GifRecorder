@@ -29,7 +29,7 @@ namespace GifRecorder
             {
                 var format = this.Png.IsChecked == true ? 1 : 0;
                 this.isRunning = true;
-                ((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000 / fps, PresentationSource.FromVisual(this), format);
+                ((MainViewModel)(this.DataContext)).ToggleRecorderAsync(seconds, this.FileName.Text, SetText, 1000 / fps, PresentationSource.FromVisual(this), format);
                 this.isRunning = false;
             }
         }
@@ -58,6 +58,13 @@ namespace GifRecorder
                         this.StartStopButton.Content = "Stop";
                     });
                     break;
+                case 4:
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.Status.Foreground = Brushes.Black;
+                        this.Status.Content = "Bilder werden verarbeitet...";
+                    });
+                    return;
                 default:
                     this.Dispatcher.Invoke(() => 
                     {
@@ -68,7 +75,6 @@ namespace GifRecorder
                     });
                     return;
             }
-
             switch (step)
             {
                 case 0:
@@ -105,6 +111,12 @@ namespace GifRecorder
             }
             string argument = "/select, \"" + filePath + "\"";
             System.Diagnostics.Process.Start("explorer.exe", argument);
+        }
+
+        private void Button_Click3(object sender, RoutedEventArgs e)
+        {
+            this.MenuGrid.ColumnDefinitions[1].Width = this.MenuGrid.ColumnDefinitions[1].Width == GridLength.Auto ? new GridLength(0) : GridLength.Auto;
+            this.Width = this.Width == 430 ? 230 : 430;
         }
     }
 }
