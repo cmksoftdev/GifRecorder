@@ -19,11 +19,11 @@
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Aufnahmezeit in Sekunden:</Label>
                 <TextBox x:Name="Seconds" Text="5" TextAlignment="Center" HorizontalAlignment="Stretch" Width="40" Height="18"/>
-                <Button Click="Button_Click3"></Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Label HorizontalAlignment="Center" Width="160">Bilder pro Sekunde:</Label>
+                <Label HorizontalAlignment="Center" Width="110">Bilder pro Sekunde:</Label>
                 <TextBox x:Name="FPS" Text="4" TextAlignment="Center" HorizontalAlignment="Right" Width="40"  Height="18"/>
+                <Button Click="Button_Click3" Margin="5,0">Optionen</Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Left" Width="75">Dateiname:</Label>

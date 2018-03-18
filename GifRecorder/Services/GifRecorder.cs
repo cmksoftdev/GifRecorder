@@ -82,11 +82,11 @@ namespace GifRecorder.Services
                             stepAction.Invoke(time == 0 ? 0 : 1);
                             var time2 = DateTime.Now.Ticks / 10000;
                             var image = ScreenShotCreator.CaptureScreen(true, ax, ay, bx, by);
-                            if (option2==3)
+                            if (option2==2)
                             {
                                 imageList.Add(image);
                             }
-                            else if (option2 == 2)
+                            else if (option2 == 3)
                             {
                                 imageStore.SetImage(image);
                             }
