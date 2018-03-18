@@ -125,8 +125,10 @@ namespace GifRecorder.Services
                     }
                     if (option2 == 2)
                     {
-                        Action t = new Action(()=> 
+                        Action a = new Action(()=> 
                         {
+
+                            this.stepAction.Invoke(4);
                             var count = imageStore.ImageCount;
                             for (int i = 0; i < count; i++)
                             {
@@ -138,7 +140,7 @@ namespace GifRecorder.Services
                             }
                             progressAction.Invoke(-1f);
                         });
-                        await Task.Run(t);
+                        await Task.Run(a);
                     }
                     else if (option2==3)
                     {

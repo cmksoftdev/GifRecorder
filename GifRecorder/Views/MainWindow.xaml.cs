@@ -58,6 +58,13 @@ namespace GifRecorder
                         this.StartStopButton.Content = "Stop";
                     });
                     break;
+                case 4:
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.Status.Foreground = Brushes.Black;
+                        this.Status.Content = "Bilder werden verarbeitet";
+                    });
+                    return;
                 default:
                     this.Dispatcher.Invoke(() => 
                     {
