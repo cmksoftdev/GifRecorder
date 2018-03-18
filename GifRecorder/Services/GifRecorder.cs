@@ -123,7 +123,7 @@ namespace GifRecorder.Services
                             time = DateTime.Now.Ticks / 10000 - time2;
                         });
                     }
-                    if (option2 == 2)
+                    if (option2 == 3)
                     {
                         Action a = new Action(()=> 
                         {
@@ -142,7 +142,7 @@ namespace GifRecorder.Services
                         });
                         await Task.Run(a);
                     }
-                    else if (option2==3)
+                    else if (option2==2)
                     {
                         foreach (var image in imageList)
                         {
