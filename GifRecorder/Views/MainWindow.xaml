@@ -15,7 +15,7 @@
             <ColumnDefinition Width="230"/>
             <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.ColumnSpan="1" Grid.Row="0">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.ColumnSpan="1" Margin="0,0,10,0">
             <StackPanel Orientation="Horizontal">
                 <Label HorizontalAlignment="Center" Width="160">Aufnahmezeit in Sekunden:</Label>
                 <TextBox x:Name="Seconds" Text="5" TextAlignment="Center" HorizontalAlignment="Stretch" Width="40" Height="18"/>
@@ -37,6 +37,7 @@
             <Button x:Name="StartStopButton" Click="Button_Click">Start</Button>
             <Button Click="Button_Click_1">Bildschirmausschnitt wählen</Button>
             <Label x:Name="Status" Content="Startbereit" HorizontalAlignment="Center"></Label>
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Path=Progress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Height="8" Visibility="{Binding Visible}"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Column="2">
             <Label>Filteroptionen:</Label>

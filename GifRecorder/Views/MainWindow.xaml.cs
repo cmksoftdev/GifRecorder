@@ -29,7 +29,7 @@ namespace GifRecorder
             {
                 var format = this.Png.IsChecked == true ? 1 : 0;
                 this.isRunning = true;
-                ((MainViewModel)(this.DataContext)).ToggleRecorder(seconds, this.FileName.Text, SetText, 1000 / fps, PresentationSource.FromVisual(this), format);
+                ((MainViewModel)(this.DataContext)).ToggleRecorderAsync(seconds, this.FileName.Text, SetText, 1000 / fps, PresentationSource.FromVisual(this), format);
                 this.isRunning = false;
             }
         }
@@ -68,7 +68,6 @@ namespace GifRecorder
                     });
                     return;
             }
-
             switch (step)
             {
                 case 0:

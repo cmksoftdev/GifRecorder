@@ -11,14 +11,16 @@ namespace GifRecorder.Services
     {
         private Stream stream;
         private readonly Action<int> stepAction;
+        private readonly Action<float> progressAction;
 
         public bool Cancel { get; set; }
         public bool IsRunning { get; private set; }
 
-        public GifRecorder(Stream stream, Action<int> action)
+        public GifRecorder(Stream stream, Action<int> action, Action<float> action2)
         {
             this.stream = stream;
             this.stepAction = action;
+            this.progressAction = action2;
         }
 
         public async Task Start(int seconds, int ax, int ay, int bx, int by, int timeInterval,int option, int option2, int format = 1)
@@ -123,13 +125,20 @@ namespace GifRecorder.Services
                     }
                     if (option2 == 2)
                     {
-                        var count = imageStore.ImageCount;
-                        for (int i = 0; i < count; i++)
+                        Action t = new Action(()=> 
                         {
-                            var image = imageStore.GetImage(i);
-                            var image2 = imageChangeAnalyser.BlackoutImage(image);
-                            pngWriter.WriteFrame(image2);
-                        }
+                            var count = imageStore.ImageCount;
+                            for (int i = 0; i < count; i++)
+                            {
+                                var percent = (100f/count) * i;
+                                progressAction.Invoke(percent);
+                                var image = imageStore.GetImage(i);
+                                var image2 = imageChangeAnalyser.BlackoutImage(image);
+                                pngWriter.WriteFrame(image2);
+                            }
+                            progressAction.Invoke(-1f);
+                        });
+                        await Task.Run(t);
                     }
                     else if (option2==3)
                     {
