@@ -80,6 +80,26 @@ namespace GifRecorder.Services
             _writer.Write(0);
         }
 
+        private void write_tEXt_signature()
+        {
+            var text = "tEXt".ToCharArray().Select(c => (byte)c).ToArray();
+            var text2 = "Software CMK " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "_" +
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var length = text2.Length;
+            var lengthArray = BitConverter.GetBytes(length);
+            Array.Reverse(lengthArray);
+            byte[] text3 = new byte[text.Length + text2.Length];
+            text.CopyTo(text3, 0);
+            text2.ToCharArray().Select(c => (byte)c).ToArray().CopyTo(text3, 4);
+            CrcCalculator crc32 = new CrcCalculator();
+            var crc = crc32.GetCRC32(text3);
+            var crcArray = BitConverter.GetBytes(crc);
+            Array.Reverse(crcArray);
+            _writer.Write(lengthArray);
+            _writer.Write(text3);
+            _writer.Write(crcArray);
+        }
+
         private void write_fcTL(int x, int y, int offsetX, int offsetY) // Frame Control Chunk
         {
             List<Byte> chunk = new List<byte>();
@@ -247,6 +267,7 @@ namespace GifRecorder.Services
                 {
                     write_Signature();
                     write_IHDR(png);
+                    write_tEXt_signature();
                     write_acTL_placeholder();
                 }
                 write_fcTL(image.Width, image.Height, offsetX, offsetY);
