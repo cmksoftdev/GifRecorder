@@ -288,8 +288,8 @@ namespace GifRecorder.Services
         /// Adds a frame to this animation.
         /// </summary>
         /// <param name="Image">The image to add</param>
-        /// <param name="offsetX">X Offset to render the Image</param>
-        /// <param name="offsetY">Y Offset to render the Image</param>
+        /// <param name="offsetX">X offset to render the image</param>
+        /// <param name="offsetY">Y offset to render the image</param>
         public void WriteFrame(Image image, int offsetX = 0, int offsetY = 0)
         {
             using (Stream png = new MemoryStream())
