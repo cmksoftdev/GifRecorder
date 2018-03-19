@@ -186,6 +186,8 @@ namespace GifRecorder.Services
                     //Write data
                     _writer.Write(fdAT);
                     _writer.Write(getSwappedCrc(data));
+
+                    //Increase counter
                     ChunkSequenceNumber++;
                 }
             }
