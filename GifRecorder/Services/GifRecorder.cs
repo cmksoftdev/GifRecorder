@@ -103,21 +103,22 @@ namespace GifRecorder.Services
                                         changes.OffsetY = changes.OffsetY > 4 ? changes.OffsetY - 2 : 2;
                                     }
                                     var newImage = imageChangeAnalyser.GetPartialImage(image, changes);
-                                    pngWriter.WriteFrame(newImage, changes.OffsetX, changes.OffsetY);
+                                    pngWriter.WriteFrame(newImage, (short)timeInterval, changes.OffsetX, changes.OffsetY);
                                 }
                                 else if (option == 1)
                                 {
-                                    pngWriter.WriteFrame(image);
+                                    pngWriter.WriteFrame(image, (short)timeInterval);
                                 }
                                 else if (option == 2)
                                 {
-                                    var newImage = imageChangeAnalyser.BlackoutImage(image);
-                                    pngWriter.WriteFrame(newImage);
+                                    bool e;
+                                    var newImage = imageChangeAnalyser.BlackoutImage(image, out e);
+                                    pngWriter.WriteFrame(newImage, (short)timeInterval);
                                 }
                                 else
                                 {
                                     var newImage = imageChangeAnalyser.BlackoutImage(image, 1);
-                                    pngWriter.WriteFrame(newImage);
+                                    pngWriter.WriteFrame(newImage, (short)timeInterval);
                                 }
                             }
                             time = DateTime.Now.Ticks / 10000 - time2;
@@ -130,13 +131,31 @@ namespace GifRecorder.Services
 
                             this.stepAction.Invoke(4);
                             var count = imageStore.ImageCount;
+                            var delay = (short)timeInterval;
+                            var duplicat = false;
                             for (int i = 0; i < count; i++)
                             {
                                 var percent = (100f/count) * i;
                                 progressAction.Invoke(percent);
                                 var image = imageStore.GetImage(i);
-                                var image2 = imageChangeAnalyser.BlackoutImage(image);
-                                pngWriter.WriteFrame(image2);
+                                bool equal;
+                                var image2 = imageChangeAnalyser.BlackoutImage(image, out equal);
+                                if(equal&&i!=count-1)
+                                {
+                                    duplicat = true;
+                                    delay += (short)timeInterval;
+                                }
+                                else
+                                {
+                                    if (duplicat)
+                                    {
+                                        duplicat = false;
+                                        pngWriter.WriteFrame(image2, delay);
+                                    }
+                                    else
+                                        pngWriter.WriteFrame(image2, delay);
+                                    delay = (short)timeInterval;
+                                }
                             }
                             progressAction.Invoke(-1f);
                         });
@@ -146,8 +165,9 @@ namespace GifRecorder.Services
                     {
                         foreach (var image in imageList)
                         {
-                            var image2 = imageChangeAnalyser.BlackoutImage(image);
-                            pngWriter.WriteFrame(image2);
+                            bool equal;
+                            var image2 = imageChangeAnalyser.BlackoutImage(image, out equal);
+                            pngWriter.WriteFrame(image2, (short)timeInterval);
                         }
                     }
                 } 

@@ -65,12 +65,12 @@ namespace GifRecorder.Services
             var newImage2 = new Bitmap(newImageBmp);
             if (oldImage != null)
             {
-                for (int i = 0; i < x-4; i += 4)
+                for (int i = 0; i < x - 4; i += 4)
                 {
-                    for (int j = 0; j < y-4; j += 4)
+                    for (int j = 0; j < y - 4; j += 4)
                     {
-                        Color a = oldImage.GetPixel(i+s, j + s);
-                        Color b = newImageBmp.GetPixel(i+s, j + s);
+                        Color a = oldImage.GetPixel(i + s, j + s);
+                        Color b = newImageBmp.GetPixel(i + s, j + s);
                         if (isColorEqual(a, b))
                         {
                             set_transparent(newImageBmp, i, j);
@@ -84,22 +84,25 @@ namespace GifRecorder.Services
 
         private void set_transparent(Bitmap bmp, int x, int y)
         {
-            for (int i=0;i<4;i++)
+            for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    bmp.SetPixel(i+x, j+y, Color.Transparent);
+                    bmp.SetPixel(i + x, j + y, Color.Transparent);
                 }
             }
         }
 
-        public Image BlackoutImage(Image newImage)
+        public Image BlackoutImage(Image newImage, out bool equal)
         {
+            equal = false;
             if (newImage == null)
                 return null;
             var newImageBmp = new Bitmap(newImage);
             var x = newImage.Width;
             var y = newImage.Height;
+            var pixelCount = x * y;
+            var changeCount = 0;
             var newImage2 = new Bitmap(newImageBmp);
             if (oldImage != null)
             {
@@ -111,12 +114,14 @@ namespace GifRecorder.Services
                         Color b = newImageBmp.GetPixel(i, j);
                         if (isColorEqual(a, b))
                         {
+                            changeCount++;
                             newImageBmp.SetPixel(i, j, Color.Transparent);
                         }
                     }
                 }
             }
             oldImage = newImage2;
+            equal = changeCount == pixelCount;
             return newImageBmp;
         }
 
