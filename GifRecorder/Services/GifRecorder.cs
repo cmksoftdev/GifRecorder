@@ -133,6 +133,7 @@ namespace GifRecorder.Services
                             var count = imageStore.ImageCount;
                             var delay = (short)timeInterval;
                             var duplicat = false;
+                            Image lastValidImage = null;
                             for (int i = 0; i < count; i++)
                             {
                                 var percent = (100f/count) * i;
@@ -140,6 +141,7 @@ namespace GifRecorder.Services
                                 var image = imageStore.GetImage(i);
                                 bool equal;
                                 var image2 = imageChangeAnalyser.BlackoutImage(image, out equal);
+                                lastValidImage = image2 == null ? lastValidImage : image2;
                                 if(equal&&i!=count-1)
                                 {
                                     duplicat = true;
@@ -150,7 +152,7 @@ namespace GifRecorder.Services
                                     if (duplicat)
                                     {
                                         duplicat = false;
-                                        pngWriter.WriteFrame(image2, delay);
+                                        pngWriter.WriteFrame(lastValidImage, delay);
                                     }
                                     else
                                         pngWriter.WriteFrame(image2, delay);
