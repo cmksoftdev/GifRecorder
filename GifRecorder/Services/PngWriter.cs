@@ -86,8 +86,7 @@ namespace GifRecorder.Services
             var text2 = "Software CMK " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "_" +
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             var length = text2.Length;
-            var lengthArray = BitConverter.GetBytes(length);
-            Array.Reverse(lengthArray);
+            var lengthArray = getSwappedArray(length);
             byte[] text3 = new byte[text.Length + text2.Length];
             text.CopyTo(text3, 0);
             text2.ToCharArray().Select(c => (byte)c).ToArray().CopyTo(text3, 4);
@@ -101,25 +100,18 @@ namespace GifRecorder.Services
             List<Byte> chunk = new List<byte>();
             chunk.AddRange(new Byte[]{ 0, 0, 0, 26 });
             chunk.AddRange("fcTL".ToCharArray().Select(c => (byte)c).ToArray());
-            Byte[] _ChunkSequenceNumber = BitConverter.GetBytes(ChunkSequenceNumber);
-            Array.Reverse(_ChunkSequenceNumber);
+            Byte[] _ChunkSequenceNumber = getSwappedArray(ChunkSequenceNumber);
             chunk.AddRange(_ChunkSequenceNumber);
-            Byte[] _x = BitConverter.GetBytes(x);
-            Array.Reverse(_x);
+            Byte[] _x = getSwappedArray(x);
             chunk.AddRange(_x);
-            Byte[] _y = BitConverter.GetBytes(y);
-            Array.Reverse(_y);
+            Byte[] _y = getSwappedArray(y);
             chunk.AddRange(_y);
-            Byte[] _offsetX = BitConverter.GetBytes(offsetX);
-            Array.Reverse(_offsetX);
+            Byte[] _offsetX = getSwappedArray(offsetX);
             chunk.AddRange(_offsetX);
-            Byte[] _offsetY = BitConverter.GetBytes(offsetY);
-            Array.Reverse(_offsetY);
+            Byte[] _offsetY = getSwappedArray(offsetY);
             chunk.AddRange(_offsetY);
-            Byte[] _DefaultFrameDelay = BitConverter.GetBytes((short)DefaultFrameDelay);
-            Array.Reverse(_DefaultFrameDelay);
-            Byte[] _FrameCount2 = BitConverter.GetBytes((short)FrameCount);
-            Array.Reverse(_FrameCount2);
+            Byte[] _DefaultFrameDelay = getSwappedArray((short)DefaultFrameDelay); 
+            Byte[] _FrameCount2 = getSwappedArray((short)FrameCount);
             chunk.AddRange(_DefaultFrameDelay);
             chunk.AddRange(new Byte[] { 3, 232 });
             chunk.AddRange(new Byte[] { 0, 1});
@@ -157,11 +149,9 @@ namespace GifRecorder.Services
             {
                 if (idat != null)
                 {
-                    Byte[] _ChunkSequenceNumber = BitConverter.GetBytes(ChunkSequenceNumber);
-                    Array.Reverse(_ChunkSequenceNumber);
+                    Byte[] _ChunkSequenceNumber = getSwappedArray(ChunkSequenceNumber);
                     var length = idat.Count() - 8;
-                    var lengthArray = BitConverter.GetBytes(length);
-                    Array.Reverse(lengthArray);
+                    var lengthArray = getSwappedArray(length);
                     Byte[] fdAT = new byte[idat.Count()];
                     lengthArray.CopyTo(fdAT, 0);
                     var sign = "fdAT".ToCharArray().Select(c => (byte)c).ToArray();
@@ -185,6 +175,20 @@ namespace GifRecorder.Services
             var crcArray = BitConverter.GetBytes(crc);
             Array.Reverse(crcArray);
             return crcArray;
+        }
+
+        private byte[] getSwappedArray(int i)
+        {
+            Byte[] bytes = BitConverter.GetBytes(i);
+            Array.Reverse(bytes);
+            return bytes;
+        }
+
+        private byte[] getSwappedArray(short s)
+        {
+            Byte[] bytes = BitConverter.GetBytes(s);
+            Array.Reverse(bytes);
+            return bytes;
         }
 
         private List<Byte[]> find_IHDR(Stream png)
@@ -239,11 +243,9 @@ namespace GifRecorder.Services
                 0,0,0,8
             };
             chunk.AddRange("acTL".ToCharArray().Select(c => (byte)c).ToArray());
-            Byte[] _FrameCount = BitConverter.GetBytes((int)FrameCount);
-            Array.Reverse(_FrameCount);
+            Byte[] _FrameCount = getSwappedArray((int)FrameCount);
             chunk.AddRange(_FrameCount);
-            Byte[] _Repeat = BitConverter.GetBytes(Repeat);
-            Array.Reverse(_Repeat);
+            Byte[] _Repeat = getSwappedArray(Repeat);
             chunk.AddRange(_Repeat);
             _writer.Seek((int)FrameCountPosition, SeekOrigin.Begin);
             _writer.Write(chunk.ToArray());
