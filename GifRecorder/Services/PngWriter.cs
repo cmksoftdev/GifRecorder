@@ -18,13 +18,23 @@ namespace GifRecorder.Services
         public int DefaultFrameDelay { get; set; }
         public int Repeat { get; }
 
+        /// <summary>
+        /// The current count of Frames added to the Animation.
+        /// </summary>
+        public long FrameCount { get; private set; }
+
         private long FrameCountPosition { get; set; }
-        private long FrameCount { get; set; }
         private int ChunkSequenceNumber { get; set; }
         private int x { get; }
         private int y { get; }
         #endregion
 
+        /// <summary>
+        /// Creates a new instance of PngWriter.
+        /// </summary>
+        /// <param name="OutStream">The <see cref="Stream"/> to output the Gif to.</param>
+        /// <param name="DefaultFrameDelay">Default Delay between consecutive frames... FrameRate = 1000 / DefaultFrameDelay.</param>
+        /// <param name="Repeat">No of times the Png should repeat... 0 to repeat indefinitely.</param>
         public PngWriter(Stream OutStream, int x, int y, int DefaultFrameDelay = 500, int Repeat = 0)
         {
             if (OutStream == null)
@@ -45,6 +55,8 @@ namespace GifRecorder.Services
             this.y = y;
             this.OutStream = OutStream;
         }
+
+        #region Private methods
 
         private void write_Signature()
         {
@@ -67,29 +79,28 @@ namespace GifRecorder.Services
         private void write_acTL_placeholder() // Animation Control Chunk
         {
             FrameCountPosition = _writer.BaseStream.Position;
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)8);
+            _writer.Write(getSwappedArray(8));
             _writer.Write("acTL".ToCharArray());
             _writer.Write(0); // Number of frames
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)0);
-            _writer.Write((byte)Repeat); // Number of times to loop this APNG.  0 indicates infinite looping.
+            _writer.Write(getSwappedArray(Repeat)); // Number of times to loop this APNG.  0 indicates infinite looping.
             _writer.Write(0);
         }
 
         private void write_tEXt_signature()
         {
+            //Prepare data
             var text = "tEXt".ToCharArray().Select(c => (byte)c).ToArray();
             var text2 = "Software CMK " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "_" +
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             var length = text2.Length;
             var lengthArray = getSwappedArray(length);
+
+            //Assemble data
             byte[] text3 = new byte[text.Length + text2.Length];
             text.CopyTo(text3, 0);
             text2.ToCharArray().Select(c => (byte)c).ToArray().CopyTo(text3, 4);
+
+            //Write data
             _writer.Write(lengthArray);
             _writer.Write(text3);
             _writer.Write(getSwappedCrc(text3));
@@ -97,26 +108,33 @@ namespace GifRecorder.Services
 
         private void write_fcTL(int x, int y, int offsetX, int offsetY) // Frame Control Chunk
         {
+            //Prepare data
             List<Byte> chunk = new List<byte>();
-            chunk.AddRange(new Byte[]{ 0, 0, 0, 26 });
-            chunk.AddRange("fcTL".ToCharArray().Select(c => (byte)c).ToArray());
             Byte[] _ChunkSequenceNumber = getSwappedArray(ChunkSequenceNumber);
-            chunk.AddRange(_ChunkSequenceNumber);
             Byte[] _x = getSwappedArray(x);
-            chunk.AddRange(_x);
             Byte[] _y = getSwappedArray(y);
-            chunk.AddRange(_y);
             Byte[] _offsetX = getSwappedArray(offsetX);
-            chunk.AddRange(_offsetX);
             Byte[] _offsetY = getSwappedArray(offsetY);
-            chunk.AddRange(_offsetY);
-            Byte[] _DefaultFrameDelay = getSwappedArray((short)DefaultFrameDelay); 
+            Byte[] _DefaultFrameDelay = getSwappedArray((short)DefaultFrameDelay);
             Byte[] _FrameCount2 = getSwappedArray((short)FrameCount);
+
+            //Assemble data
+            chunk.AddRange(new Byte[] { 0, 0, 0, 26 });
+            chunk.AddRange("fcTL".ToCharArray().Select(c => (byte)c).ToArray());
+            chunk.AddRange(_ChunkSequenceNumber);
+            chunk.AddRange(_x);
+            chunk.AddRange(_y);
+            chunk.AddRange(_offsetX);
+            chunk.AddRange(_offsetY);
             chunk.AddRange(_DefaultFrameDelay);
             chunk.AddRange(new Byte[] { 3, 232 });
-            chunk.AddRange(new Byte[] { 0, 1});
+            chunk.AddRange(new Byte[] { 0, 1 });
+
+            //Write data
             _writer.Write(chunk.ToArray());
-            _writer.Write(getSwappedCrc(chunk.Skip(4).ToArray())); 
+            _writer.Write(getSwappedCrc(chunk.Skip(4).ToArray()));
+
+            //Increase counters
             FrameCount++;
             ChunkSequenceNumber++;
         }
@@ -141,7 +159,7 @@ namespace GifRecorder.Services
                 }
             }
         }
-        
+
         private void write_fdAT(Stream png)
         {
             List<Byte[]> idatList = find_IDAT(png);
@@ -149,18 +167,23 @@ namespace GifRecorder.Services
             {
                 if (idat != null)
                 {
+                    //Prepare data
                     Byte[] _ChunkSequenceNumber = getSwappedArray(ChunkSequenceNumber);
                     var length = idat.Count() - 8;
                     var lengthArray = getSwappedArray(length);
                     Byte[] fdAT = new byte[idat.Count()];
-                    lengthArray.CopyTo(fdAT, 0);
                     var sign = "fdAT".ToCharArray().Select(c => (byte)c).ToArray();
-                    sign.CopyTo(fdAT, 4);
-                    _ChunkSequenceNumber.CopyTo(fdAT, 8);
                     var idat2 = idat.Take(idat.Count() - 4).ToArray();
                     idat2 = idat2.Skip(8).ToArray();
-                    idat2.CopyTo(fdAT, 12);
                     var data = fdAT.Skip(4).ToArray();
+
+                    //Assemble data
+                    lengthArray.CopyTo(fdAT, 0);
+                    sign.CopyTo(fdAT, 4);
+                    _ChunkSequenceNumber.CopyTo(fdAT, 8);
+                    idat2.CopyTo(fdAT, 12);
+
+                    //Write data
                     _writer.Write(fdAT);
                     _writer.Write(getSwappedCrc(data));
                     ChunkSequenceNumber++;
@@ -225,7 +248,6 @@ namespace GifRecorder.Services
                     png.Position -= 4;
                     png.Read(result[found], 0, (int)(length + 12));
                     found++;
-                    //break;
                 }
             }
             return result;
@@ -238,21 +260,36 @@ namespace GifRecorder.Services
 
         private void write_acTL()
         {
+            //Prepare data
+            Byte[] _FrameCount = getSwappedArray((int)FrameCount);
+            Byte[] _Repeat = getSwappedArray(Repeat);
+
+            //Assemble data
             List<byte> chunk = new List<byte>()
             {
                 0,0,0,8
             };
             chunk.AddRange("acTL".ToCharArray().Select(c => (byte)c).ToArray());
-            Byte[] _FrameCount = getSwappedArray((int)FrameCount);
             chunk.AddRange(_FrameCount);
-            Byte[] _Repeat = getSwappedArray(Repeat);
             chunk.AddRange(_Repeat);
+
+            //Write data
             _writer.Seek((int)FrameCountPosition, SeekOrigin.Begin);
             _writer.Write(chunk.ToArray());
-            _writer.Write(getSwappedCrc(chunk.Skip(4).ToArray())); 
+            _writer.Write(getSwappedCrc(chunk.Skip(4).ToArray()));
+
+            //Increase counter
             FrameCount++;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Adds a frame to this animation.
+        /// </summary>
+        /// <param name="Image">The image to add</param>
+        /// <param name="offsetX">X Offset to render the Image</param>
+        /// <param name="offsetY">Y Offset to render the Image</param>
         public void WriteFrame(Image image, int offsetX = 0, int offsetY = 0)
         {
             using (Stream png = new MemoryStream())
@@ -273,6 +310,9 @@ namespace GifRecorder.Services
             }
         }
 
+        /// <summary>
+        /// Frees all resources used by this object.
+        /// </summary>
         public void Dispose()
         {
             write_IEND();
